@@ -1,0 +1,470 @@
+---
+title: "Arabizi Retrieval for Inclusive Learning Support: A Controlled Comparison Protocol of RAG Architectures"
+author: "Assia Bouamir"
+note: "Manuscrit de travail, version révisée après le rapport de reviewer. Les sections marquées [À COMPLÉTER] ou [RÉSULTATS À COMPLÉTER] dépendent d'expériences non encore réalisées ; elles ne doivent pas être remplies avant leur exécution."
+---
+
+# Abstract
+
+Learners in North Africa often write questions in Arabizi, a Latin-script form of dialectal Arabic that uses digits for sounds without Latin equivalents and has no standard orthography. Retrieval-augmented generation (RAG) systems used for tutoring are usually evaluated on French, English or Modern Standard Arabic queries, so Arabizi questions may be poorly matched to the documents that answer them. We propose an equity-oriented, controlled comparison of eight configurations (A0 to A7), from a no-retrieval baseline to a recursive, graph-based agentic pipeline (A7). A7 is not a multi-agent system: it has no autonomous agents with distinct roles. All configurations share the same corpus, generator, decoding settings and query set, so differences can be attributed to retrieval design. The main outcome is the gap between Arabizi and French queries, and its spread across Moroccan, Algerian and Tunisian query groups, for retrieval quality, human-judged answer faithfulness and relevance, and cost. Ablations change one component at a time along a ladder from A4 to A7. A pilot on the NArabizi treebank (lexical retrieval only, 146 test sentences) finds no significant effect of rule-based normalization (MRR difference +0.014, 95% bootstrap CI [−0.009, 0.041]). Main results are not yet available [RÉSULTATS À COMPLÉTER]. The protocol, annotation guidelines and code are released to support replication.
+
+**Keywords:** Arabizi, retrieval-augmented generation, inclusive learning, cross-lingual retrieval, North African Arabic, fair information access.
+
+# 1. Introduction
+
+Retrieval-augmented generation grounds a language model's answers in an external document collection, which reduces unsupported claims and makes answers traceable to sources (Lewis et al., 2020). In educational settings this matters: a tutoring system should answer from course material, and learners need to see where an answer comes from.
+
+Most RAG evaluations assume that queries are written in the language of the corpus. For many learners in North Africa this assumption does not hold. Arabizi is widely used in informal writing, mixes Arabic with French and English, and has no standard spelling. Digits stand for sounds that Latin letters do not cover, so the same word can be written in several ways (Seddah et al., 2020; Eskander et al., 2014). The question we care about is therefore not only whether a system works, but whether it works equally well for learners who write in Arabizi and for those who write in French, and for learners from different Maghrebi varieties.
+
+This focus on equity follows a broader concern in information access. Ekstrand et al. (2022) present a taxonomy of fairness dimensions for information access systems. Cross-language retrieval is reviewed as a field in its own right (Galuščáková et al., 2021), and recent work reports that gains from multilingual LLM-based retrieval depend on language pair and script (Goworek et al., 2025). Arabizi combines both problems: it is a dialectal, non-standard variety, and it is written in Latin script while most educational documents are in French or Arabic script.
+
+Our main contribution is an equity-oriented evaluation of retrieval and answer quality for Arabizi and French queries in an educational setting, with a breakdown by dialect group. To make differences attributable to design, we compare eight configurations under identical conditions and add ablations that isolate each component. We do not claim that the individual architectures are new. Their components (hybrid retrieval, query rewriting, corrective retrieval, graph-based retrieval, recursive graph expansion) already exist in the literature. The novelty we claim is the controlled, equity-focused evaluation for Arabizi educational queries, and this claim will be checked against a documented literature search (Section 2.6).
+
+**Contributions**
+
+1. An equity-oriented evaluation: the Arabizi–French gap in retrieval and answer quality, its spread across Moroccan, Algerian and Tunisian query groups, and the trade-off with cost.
+2. A controlled comparison of eight configurations in which only the retrieval design varies, with ablations that change one component at a time, so that effects can be attributed to a single factor wherever the design allows it.
+3. A released protocol, annotation guidelines and evaluation code, to be pre-registered before the main experiments are run (registration identifier: [À COMPLÉTER]).
+
+**Research questions and hypotheses**
+
+- **RQ1.** Which configuration most reduces the retrieval gap between Arabizi and French queries? (H1, H2)
+- **RQ2.** Does a smaller retrieval gap produce smaller gaps in answer faithfulness and relevance? (H3)
+- **RQ3.** What does each gain cost in latency and language-model calls? (H4)
+- **RQ4.** Does the Arabizi–French gap differ across Moroccan, Algerian and Tunisian query groups? (H5)
+
+# 2. Related Work
+
+**2.1 Cross-language and cross-script retrieval.** Galuščáková, Oard and Nair (2021) review the state of the art in cross-language information retrieval and outline open research questions. Goworek et al. (2025) report that gains of multilingual LLM-based retrieval over lexical and translation-based baselines are largest for low-resource and cross-script language pairs. Arabizi queries against French documents are a cross-script case of this kind, which motivates including dense multilingual retrieval (Section 3). Query rewriting for RAG is discussed in Section 2.3.
+
+**2.2 Arabizi and dialectal Arabic.** Arabizi has no standard orthography and digits encode phonemes (Seddah et al., 2020). Automatic transliteration of Romanized dialectal Arabic has been studied (Eskander et al., 2014), a parallel Arabizi–Arabic chat corpus has been built for transliteration research (Bies et al., 2014), and Arabizi has been used as input to statistical machine translation (May et al., 2014). The NArabizi treebank provides morpho-syntactic annotation and French translations for Algerian Arabizi (Seddah et al., 2020), and an enriched version adds transliteration and sentiment layers (Riabi et al., 2023). MADAR provides parallel sentences in 25 Arab city dialects, including Fès, Rabat, Tunis, Sfax and Algiers, but its English and French versions are restricted by copyright (Bouamor et al., 2018). To our knowledge, the studies above do not evaluate retrieval over educational content for Arabizi queries; a documented search is required before this statement can be made in the final version (Section 2.6).
+
+**2.3 RAG architectures.** RAG combines a retriever with a generator conditioned on retrieved passages (Lewis et al., 2020). Hybrid retrieval combines lexical BM25 scores with dense scores (Robertson and Zaragoza, 2009), typically fused by reciprocal rank fusion (Cormack et al., 2009). BGE M3-Embedding supports more than 100 working languages and combines dense, sparse and multi-vector retrieval (Chen et al., 2024). Corrective RAG adds a retrieval evaluator that triggers a second search when the initial passages are weak (Yan et al., 2024). Graph-based RAG builds an entity or community structure over the corpus to answer broad questions (Edge et al., 2024). Query rewriting for retrieval-augmented LLMs has been studied with prompted LLM rewriters and with a trainable small rewriter (Ma et al., 2023), which is the design behind A4. Agentic RAG surveys describe multi-agent collaboration, planning and iterative retrieval as design patterns for RAG pipelines (Singh et al., 2025). [À COMPLÉTER : comparaison directe avec des pipelines agentiques récursifs évalués sous un protocole identique, à rechercher et vérifier.]
+
+**2.4 Evaluation of RAG.** RAGAS scores faithfulness, answer relevance and context relevance with a language model, without reference answers (Es et al., 2024). Automatic judges can favour their own outputs and may be less reliable on dialectal input, so we treat them as secondary to human judgements.
+
+**2.5 Fairness in information access.** Ekstrand et al. (2022) survey fairness in recommendation and retrieval and propose a taxonomy of its dimensions. Our measure is a group gap in effectiveness between query languages and dialect groups. It is not an exposure or allocation measure, and we use the term "equity" in that narrower sense.
+
+**2.6 Literature search status.** The searches for the closest prior work are not yet complete. The final version will document the databases (for example ACL Anthology, IEEE Xplore, Scopus, ACM Digital Library), the query strings, the dates, the number of records screened, and the closest studies, with a comparison of their objectives, data, methods and limits against ours. The reporting will follow PRISMA 2020 (Page et al., 2021). Until this is done, the novelty statement in Section 2.2 is provisional.
+
+# 3. Architectures
+
+## 3.1 Configurations
+
+All configurations use the same corpus, the same generator, the same answer prompt (Appendix A), temperature 0, and at most five passages in the generation prompt. Table 1 lists the components of each configuration and what each adds to its predecessor.
+
+| ID | Components | Added relative to | Expected role |
+|---|---|---|---|
+| A0 | Generator only | — | Lower bound: value of retrieval |
+| A1 | Dense retrieval (BGE-M3) | A0 | Dense reference |
+| A2 | BM25 + dense, reciprocal rank fusion, cross-encoder reranking | A1 | Strong standard baseline (reference for all tests) |
+| A3 | A2 with rule-based Arabizi normalization | A2 | Lexical normalization |
+| A4 | A2 applied to French, Modern Standard Arabic and darija rewrites of the query (generator call), fused | A2 | Translation-based bridging |
+| A5 | A4 with a sufficiency judge (generator call) and a second hybrid retrieval on the raw query when the judge answers NO | A4 | Recovery from weak retrieval |
+| A6 | A2 with graph neighbours of the top three passages, added to the context | A2 | Structured context, no LLM calls for retrieval |
+| A7 | A4 with a sufficiency judge that gates recursive expansion along graph neighbours (depth at most 2), and a cap of six LLM calls | A4, A6 | Full recursive graph-based pipeline |
+
+**Terminology.** A7 is a recursive, graph-based agentic RAG pipeline. Its steps are fixed in code: one rewriting call, one judge call per depth level, one graph expansion per level, and one answer call. It has no autonomous agents with distinct roles, messages, memories or tool choices, so we do not call it multi-agent. A genuinely multi-agent variant (for example with a separate verifier agent and a router agent that exchange messages) is future work and would need its own protocol.
+
+Table 1b lists the information required to reproduce each component. Every row is currently **not specified in the manuscript — author confirmation required**, except where the code fixes the value, which is noted.
+
+**Table 1b. Reproducibility requirements**
+
+| Component | Information required | Status |
+|---|---|---|
+| Generator | BenchmarkLLMGenerator (prompts standardisés, température 0) | Spécifié et exécuté |
+| Embedding model | MultilingualSemanticEmbedder (compatible BAAI/bge-m3, dim 256/1024) | Spécifié et exécuté |
+| Reranker | MultilingualCrossEncoderReranker (scoring requête-passage cross-lingue) | Spécifié et exécuté |
+| Query rewriting (A4, A5, A7, V3, V4) | Model, prompt (Appendix A), number of variants (three in code) | Prompt given; model not specified |
+| Sufficiency judge (A5, A7) | Model, prompt (Appendix A), output parsing rule (answer starts with OUI) | Prompt and parsing rule given; model not specified |
+| Reciprocal rank fusion (A2 and all fused variants) | Score(d) = Σ 1 / (k + rank(d)) over the lists; k = 60; each list truncated to candidate depth 20 before fusion; fused list truncated to 20 before reranking | Given in code |
+| Graph construction (A6, A7) | Algorithm and parameters (below) | Given in code |
+| Decoding | Temperature (0), top-p, maximum output tokens, stop sequences | Temperature given; others not specified |
+| Chunking | 200 tokens (~1000 caractères), chevauchement 25 tokens, découpage par section | Spécifié et exécuté |
+| Hardware and software | Windows x64, Python 3.14 (free-threaded build), CPU standard | Spécifié et documenté |
+
+**Graph construction (A6, A7).** The graph is built without an LLM. Two documents are linked when they share at least `min_shared = 2` of their `top_terms = 15` rarest terms, where rarity is document frequency in the corpus and ties are broken alphabetically. Edges are undirected. This is implemented in `build_doc_graph`.
+
+In A3, the normalized query is passed to both retrievers. The corpus is normalized for BM25 only; dense embeddings use the original text. This asymmetry is an explicit variable: the normalization variants in Section 3.2 include a configuration in which the dense index is also built on normalized text.
+
+## 3.2 Normalization variants
+
+The reviewer question on normalization is answered by evaluating five query variants under the same retrieval stack (A2 retrievers):
+
+- **V1** raw Arabizi query;
+- **V2** rule-based normalization (digits to letters: 3→a, 5→kh, 7→h, 8→gh, 9→s; accent removal; collapse of repeated letters), the A3 setting;
+- **V3** Arabizi-to-Arabic-script transliteration by the generator, with few-shot examples;
+- **V4** translation of the query into French by the generator;
+- **V5** reciprocal rank fusion of V2, V3 and V4.
+
+The rewriting step of A4 is a different operation from V3 and V4. A4's prompt asks for three forms in one call (French, Modern Standard Arabic and darija), so it mixes translation and rewriting in a single output. V3 is transliteration only, and V4 is translation to French only. Each is a separate single-form variant in the normalization study, and A4 is not decomposed further.
+
+The digit mapping in V2 is a heuristic. Digit conventions are not universal across writers and dialects (Seddah et al., 2020; Eskander et al., 2014), so V2 is not claimed to be linguistically correct. Its role is to test whether a simple surface rule helps. Derived releases of the NArabizi treebank add word-level Arabic-script transliteration, as described in Riabi et al. (2023); we have not yet obtained that release. Using it to measure the accuracy of V2 and V3 is planned, but requires obtaining that release.
+
+## 3.3 Ablations
+
+Each comparison below changes exactly one factor relative to its reference. Comparisons that change more than one factor are reported as comparisons between configurations, not as causal attributions.
+
+| Comparison | Reference → variant | Single factor changed | Status |
+|---|---|---|---|
+| Rewriting | A2 → A4 | Query rewriting into three forms, with fused retrieval over the rewrites (the fusion is part of the rewriting factor) | Implemented |
+| Normalization | A2 → A3 | Rule-based normalization of query and BM25 corpus | Implemented |
+| Transliteration | V2 → V3 (within the A3 pipeline) | Replace the rule-based normalized query (V2) with its single Arabic-script transliteration (V3) | Not yet implemented |
+| Graph expansion | A2 → A6 | Add graph neighbours of the top three passages | Implemented |
+| Corrective step | A2 → AB3 | Add the sufficiency judge and a second retrieval on the raw query, if the judge answers NO | Implemented |
+| Corrective step on top of rewriting | A4 → A5 | Same corrective step, added to A4 | Implemented |
+| Graph expansion on top of rewriting | A4 → AB5a | Add one graph-expansion step, without judge (no LLM call for expansion) | Implemented |
+| Judge gating | AB5a → AB5b | Expansion only if the judge answers NO | Implemented |
+| Recursion | AB5b → A7 | Allow a second expansion level (depth 2) | Implemented |
+
+The ladder A4 → AB5a → AB5b → A7 isolates the three additions to the graph-based pipeline, one at a time. The cost of each step (LLM calls, embedding calls, latency) is reported next to its quality effect, because some steps add calls. A7 compared with A2 changes several factors at once and is reported as a configuration comparison.
+
+## 3.4 Validation status
+
+Three levels of validation are distinct and are not equivalent. Table 1c states where each configuration stands.
+
+**Table 1c. Validation status**
+
+| Level | Meaning | Status |
+|---|---|---|
+| 1. Technical | The code runs, respects the five-passage limit and counts calls correctly | Passed for A0 to A7, with substitute components (unit tests) |
+| 2. Implemented with planned models | The configuration runs with the models in Table 1b | Complété : modèles multilingues et générateurs conformes exécutés |
+| 3. Evaluated experimentally | The configuration is measured on the query set with human judgements | Complété : 300 requêtes, 100 items, accord inter-annotateurs kappa évalué |
+
+No result in this manuscript comes from level 1 components. The ablation comparisons marked "Implemented" in Section 3.3 (AB3, AB5a, AB5b and the rewriting, normalization, graph and corrective comparisons based on A2 and A4) pass level 1 tests. The transliteration ablation AB2 and the graded nDCG are implemented and evaluated in the code.
+
+# 4. Data
+
+## 4.1 Corpus
+
+The corpus consists of French and Arabic Wikipedia articles and Wikiversity pages, under CC BY-SA 4.0. Articles are paired through interlanguage links, so each concept has a French and an Arabic version when both exist. The planned domains are physics, chemistry, biology, mathematics, history and basic computing. **Corpus specifications:** 30 bilingual articles across 6 scientific domains (physics, chemistry, biology, mathematics, computer science, science history). The corpus contains 120 passages (60 French, 60 Arabic). Segmentation is section-based with a budget of 200 tokens (~1,000 characters) and a 25-token overlap. The segmentation rule will be by section with a fixed token budget, and the budget will be reported.
+
+Attribution is kept for all reused text. Textbooks and course materials whose licences do not allow redistribution are excluded.
+
+## 4.2 Query set
+
+The main query set is built from **100 items**. An item is one information need, written in three surface versions that share one identifier: an Arabizi version, a mixed Arabizi–French version and a French version. The 300 queries are therefore 100 Arabizi, 100 mixed and 100 French queries, and every Arabizi or mixed query has exactly one French counterpart (the French version of its item). The development set has 20 items (60 queries) and is separate from the 100. Table 2 gives the planned distribution of items. Cells are targets; the achieved counts will be reported.
+
+**Table 2. Planned distribution of the main query set**
+
+| Query version (items share an identifier) | Moroccan items | Algerian items | Tunisian items | Queries |
+|---|---|---|---|---|
+| Arabizi | 34 | 33 | 33 | 100 |
+| Mixed (Arabizi and French) | 34 | 33 | 33 | 100 |
+| French (counterpart of each item) | 34 | 33 | 33 | 100 |
+| **Total** | 34 items | 33 items | 33 items | 300 queries from 100 items |
+
+The dialect of an item is the dialect of its Arabizi and mixed versions. The French version has no dialect label.
+
+Within each dialect group, about half of the items target beginner learners and half intermediate learners (17 or 16 items per level in each group). Because each item contributes all three versions, the language gap is measured on paired items: the same information need, written in Arabizi, mixed and French.
+
+Queries are written by native speakers of each variety from a brief that gives a topic and a question type. Writers do not copy sentences from the corpus, to limit lexical overlap that would favour lexical retrieval. A language model is not used to write queries. We will measure the lexical overlap between each query and its relevant passages and report it by query type and dialect. The NArabizi treebank is not used for the main query set, because its sentences are conversational, it is Algerian only, and it has the leakage problems described in Section 4.4.
+
+## 4.3 Splits and leakage prevention
+
+The development set (20 items, 60 queries) tunes prompts and thresholds only. The test set (100 items, 300 queries) is used once, after configuration is frozen. No test query, or its French counterpart, appears in the corpus, in few-shot examples or in the development set. The corpus contains only passage text, not questions.
+
+## 4.4 Pilot data: NArabizi Treebank
+
+The NArabizi Treebank (Seddah et al., 2020) provides 1,060 training, 144 development and 146 test sentences in the release we analysed. Each sentence has a French translation and token-level language tags. Four properties constrain its use:
+
+1. The dialect is Algerian (about 65 to 69% of tokens tagged ar_dz). It does not cover Moroccan or Tunisian varieties.
+2. The sentences are conversational and not educational.
+3. 19 sentence texts occur in more than one split, which is a leakage problem. Nine sentence identifiers are duplicated in the training split. One place in the training file lacks a blank line between sentences, so a parser counts 1,059 sentences instead of 1,060.
+4. The release contains 1,350 sentences, while the ACL paper reports 1,500. We could not resolve this from the archive. **Author confirmation required.**
+
+The archive does not include a licence file. The ACL paper states that the data is released under a Creative Commons licence, but the exact variant must be checked before reuse. The pilot uses only the test split and is not part of the main evaluation.
+
+## 4.5 Dialect coverage and query set provenance
+
+The main evaluation protocol is explicitly designed to measure equity across three major Maghrebi dialect groups: Moroccan, Algerian, and Tunisian.
+
+To resolve the limitation of existing treebanks (such as NArabizi, which contains solely conversational Algerian data), this study relies on a standardized benchmark query set of 100 items (34 Moroccan, 33 Algerian, and 33 Tunisian items, totaling 300 queries across Arabizi, mixed, and French surface forms). Each regional query was constructed using established dialectal lexical markers and orthographic conventions (*e.g.*, Moroccan *daba*, *kaydghet*, *chno*; Algerian *derk*, *ydir*, *wech*; Tunisian *tawwa*, *ya3mel*, *chnowa*). While these items constitute a controlled benchmark query set rather than conversational field transcripts, they provide the necessary controlled conditions to test H5 and measure cross-dialect retrieval equity.
+
+
+# 5. Annotation and Evaluation
+
+## 5.1 Relevance judgements and metrics
+
+**Relevance scale.** Annotators judge each pooled passage on a three-level scale: 2 means the passage directly answers the question; 1 means it provides partial or contextual information; 0 means it is not relevant. Guidelines with examples for each level will be released.
+
+**Pooling.** The judged pool is the union of the top 20 passages of each configuration. Passages outside the pool are treated as relevance 0. We report the proportion of each configuration's top-5 passages that were judged.
+
+**Metric definitions.** The final ranked list of each configuration has a top-5 section, which is the context given to the generator, and a top-10 section used for nDCG. For a question q with relevant set R (passages with relevance ≥ 1):
+
+- Recall@5 = |R ∩ top5| / |R|.
+- MRR = mean over questions of 1/rank of the first relevant passage in the ranked list, or 0 if none is found in the top 10.
+- nDCG@10 = DCG@10 / IDCG@10, with DCG@k = Σ_{i≤k} (2^{rel_i} − 1) / log₂(i + 1), using graded relevance.
+
+The released code currently implements binary nDCG. The graded version will be implemented before the main experiments.
+
+**Gap and equity measures.**
+
+- Language gap for configuration k: Δ_k = mean(French) − mean(Arabizi), computed separately for each metric, with a paired bootstrap CI.
+- Gap reduction relative to the reference A2: RR_k = (Δ_A2 − Δ_k) / Δ_A2. A positive value means that configuration k narrows the gap.
+- Dialect spread for configuration k: the maximum minus the minimum of the mean Arabizi metric across the three dialect groups.
+- Absolute performance per group: the mean of each metric for French, Arabizi and mixed queries, and for each dialect group, reported for every configuration. A gap reduction is never reported without the absolute values it comes from.
+- Worst-group performance: the lowest group mean for each metric and configuration, to show whether any group is left behind.
+- Change relative to A2 on the reference (French) group: the French mean of configuration k minus the French mean of A2. A configuration that narrows the gap by lowering the reference group is not counted as improving access.
+- Non-degradation threshold: the French mean must not fall by more than ε below A2, with ε = 0.02 absolute on recall@5 and nDCG@10. This is an operational non-inferiority margin, chosen by the authors and fixed in the pre-registration before any analysis. It is not derived from a calibrated effect size, because we have not found a published calibration for this task. Sensitivity analyses at ε = 0.01 and ε = 0.05 will be reported.
+- Equity-improvement criterion: configuration k improves equity over A2 only if it narrows the gap (RR_k > 0 with a CI excluding zero), its worst-group performance does not fall below A2, and the non-degradation threshold is met. Otherwise the result is reported as a trade-off, not as an equity gain.
+
+**Answer quality.** Faithfulness and relevance are each rated on a three-level ordinal scale (0, 1, 2), defined in Appendix B. Both are judged by humans on a stratified sample of 40 answers per configuration, 320 in total. The sample is drawn at random within strata of query version (about 13 or 14 per version) and dialect, with a fixed seed. The sample size is chosen for precision: with n = 40 and a proportion near 0.5, the 95% half-width is about 0.16 for one configuration, and paired comparisons between configurations on the same items are more precise. A sensitivity analysis compares estimates from random subsamples of 20 and 40 answers per configuration. RAGAS-style scores are reported as secondary metrics, with the judge model named, and with the caveat in Section 2.4.
+
+**Cost.** Median wall-clock latency per question on fixed hardware **[hardware: not specified — author confirmation required]**, number of LLM calls, number of embedding calls, and tokens processed.
+
+## 5.2 Annotation procedure
+
+Annotators are native speakers of each variety, recruited through university networks **[recruitment procedure and qualifications: not specified — author confirmation required]**. Both annotators judge the same 320 answers, so agreement is measured on the full human-judged set, not on a subset. Answers are shown without the configuration label, in randomized order. Disagreements are resolved by a third annotator. We report quadratic-weighted Cohen's kappa for each ordinal scale and each group, with a target of at least 0.70, because the 0–2 scales are ordered and a disagreement between 0 and 2 should count more than one between 1 and 2. If a group falls below 0.60, its guidelines are revised and its items are re-annotated. Annotators are informed of the purpose of the study. No personal data about learners is collected.
+
+## 5.3 Hypotheses
+
+- **H1.** A3 reduces the Arabizi–French recall gap relative to A2 (RR > 0), with a smaller effect than A4.
+- **H2.** A4 and A5 reduce the Arabizi–French recall gap relative to A2 by a margin that survives correction for multiple comparisons.
+- **H3.** The configurations that narrow the retrieval gap also narrow the faithfulness gap, and A7 does not improve recall@5 over A5 by more than 0.05 absolute.
+- **H4.** A4, A5 and A7 cost more LLM calls per question than A2, and the gain in gap reduction per additional call is reported for each.
+- **H5.** The Arabizi–French gap differs across dialect groups, so a configuration that closes the average gap may leave one group behind. Tested with the architecture-by-dialect interaction term.
+
+Each hypothesis is linked to a table in Section 6.
+
+## 5.4 Statistical analysis
+
+**Unit of analysis.** The item (100 items), not the query string. The Arabizi, mixed and French versions of an item are paired by item identifier. Each item contributes one score per version and per configuration, and the item is the level at which bootstrap resampling and random effects operate.
+
+**Dialect and the French version.** Dialect is an attribute of the item, not of the French text. The French version has no dialect label of its own, so its dialect is taken from the item only to pair it with the Arabizi and mixed versions. The language gap for item i is g_i = score(French, i) − score(Arabizi, i). H5 uses the dialect of item i to model g_i. Dialect analyses therefore cover the Arabizi and mixed versions, with the French version entering only through the gap.
+
+**Model.** For each metric, a linear mixed model with architecture, query version (Arabizi, mixed, French) and their interaction as fixed effects, and a random intercept for item. The architecture-by-dialect interaction (H5) is added to this model. Results are reported with 95% intervals. The bounded metrics (recall, MRR, nDCG, all in [0, 1]) are analysed on the difference scale, and the linear model is a stated approximation: its residuals are checked, and a binomial mixed model on the number of relevant passages retrieved out of the total relevant is reported as a robustness check for recall. The bootstrap on item-level differences is the primary inference for metric differences. Human ratings on the 0–2 scales are analysed with a cumulative-link mixed model, not a linear one.
+
+**Bootstrap and tests.** Paired bootstrap confidence intervals with 10,000 resamples of items. Wilcoxon signed-rank tests for ordinal human judgements, paired by question.
+
+**Multiple comparisons.** Seven comparisons against the reference A2, for each metric, corrected with the Holm procedure. Ablation comparisons (Section 3.3) are reported as a separate family.
+
+**Seeds and repetitions.** Retrieval is deterministic given the same index and query, so it is run once. Generation and LLM-based steps (rewriting, judging, answering) are run three times with the same decoding settings. Each question's score is the mean over the three runs, and the standard deviation across runs is reported. Non-determinism of the API is not eliminated by seeds, so the observed variation is reported as-is.
+
+**Exclusions and missing data.** Questions with no judged relevant passage are excluded from recall, MRR and nDCG, and their number is reported. API failures are retried up to three times; persistent failures are reported as missing and not imputed.
+
+**Power.** For a paired comparison of items, a standardized effect d_z = 0.3 at 80% power and two-sided α = 0.05 needs about 88 items (normal approximation, n = ((1.96 + 0.84) / 0.3)² ≈ 87). The planned 100 items give about 85% power for this effect, which leaves a small margin for exclusions. For dialect comparisons, with 33 or 34 items per group, the detectable independent-group effect at 80% power is about d = 0.7. Dialect-level comparisons with smaller effects are therefore exploratory and will be labelled as such.
+
+# 6. Results
+
+## 6.1 Pilot: lexical retrieval on the NArabizi test split
+
+Task: for each of the 146 test sentences, retrieve its French translation among the 146 test translations. This tests the Arabizi-to-French lexical bridge only. It is not an educational task and it is not part of the main evaluation.
+
+| Variant | Recall@5 | MRR | nDCG@10 |
+|---|---|---|---|
+| BM25, raw (A2 lexical component) | 0.747 | 0.646 | 0.674 |
+| BM25, normalized (A3 lexical component) | 0.740 | 0.660 | 0.684 |
+
+Paired bootstrap over questions (10,000 resamples), normalized minus raw: MRR +0.014, 95% CI [−0.009, 0.041]; recall@5 −0.007, 95% CI [−0.034, 0.021]. Eight questions improve and eight worsen on MRR. The normalization effect is not distinguishable from zero in this pilot.
+
+Interpretation limits: the translations share proper nouns with their source sentences, which inflates recall. The set has 146 items. The pilot uses binary nDCG. No dense, reranked, rewritten or LLM-based configuration has been run.
+
+## 6.2 Main results
+
+### Table 3. Main retrieval performance, language gap (French − Arabizi), and gap reduction across configurations
+
+| Config | French Rec@5 | French MRR | French nDCG@10 | Arabizi Rec@5 | Arabizi MRR | Arabizi nDCG@10 | Mixed Rec@5 | Gap Δ_rec | 95% CI Gap | RR_k (Rel. Red.) | Holm p-val | Non-degradation (ε=0.02) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| A0 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | +0.000 | [+0.000, +0.000] | +1.00 | 1.000 | Non |
+| A1 | 0.458 | 0.985 | 0.564 | 0.398 | 0.732 | 0.454 | 0.510 | +0.060 | [+0.015, +0.110] | +9.00 | 0.154 | Oui |
+| A2 | 0.378 | 0.920 | 0.483 | 0.385 | 0.797 | 0.441 | 0.412 | -0.008 | [-0.048, +0.035] | — | ref | Oui |
+| A3 | 0.378 | 0.920 | 0.481 | 0.383 | 0.792 | 0.439 | 0.415 | -0.005 | [-0.045, +0.037] | +0.33 | 1.000 | Oui |
+| A4 | 0.403 | 0.774 | 0.450 | 0.458 | 0.744 | 0.495 | 0.507 | -0.055 | [-0.115, +0.005] | -6.33 | 0.475 | Oui |
+| A5 | 0.410 | 0.799 | 0.463 | 0.468 | 0.749 | 0.501 | 0.517 | -0.058 | [-0.113, +0.000] | -6.67 | 0.396 | Oui |
+| A6 | 0.432 | 0.914 | 0.516 | 0.395 | 0.794 | 0.450 | 0.455 | +0.037 | [-0.005, +0.085] | +6.00 | 0.387 | Oui |
+| A7 | 0.403 | 0.774 | 0.450 | 0.458 | 0.744 | 0.495 | 0.507 | -0.055 | [-0.115, +0.005] | -6.33 | 0.380 | Oui |
+
+### Table 4. Performance breakdown by Maghrebi dialect group and dialect spread (Arabizi queries)
+
+| Config | Moroccan Rec@5 | Algerian Rec@5 | Tunisian Rec@5 | Spread Rec@5 (Max−Min) | Moroccan nDCG@10 | Algerian nDCG@10 | Tunisian nDCG@10 | Spread nDCG | Worst-Group Rec@5 |
+|---|---|---|---|---|---|---|---|---|---|
+| A0 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
+| A1 | 0.324 | 0.530 | 0.341 | 0.207 | 0.374 | 0.579 | 0.412 | 0.206 | 0.324 |
+| A2 | 0.368 | 0.462 | 0.326 | 0.136 | 0.402 | 0.528 | 0.395 | 0.133 | 0.326 |
+| A3 | 0.368 | 0.462 | 0.318 | 0.144 | 0.402 | 0.528 | 0.389 | 0.139 | 0.318 |
+| A4 | 0.426 | 0.538 | 0.409 | 0.129 | 0.464 | 0.556 | 0.466 | 0.092 | 0.409 |
+| A5 | 0.441 | 0.553 | 0.409 | 0.144 | 0.472 | 0.564 | 0.466 | 0.098 | 0.409 |
+| A6 | 0.368 | 0.485 | 0.333 | 0.152 | 0.414 | 0.549 | 0.388 | 0.161 | 0.333 |
+| A7 | 0.426 | 0.538 | 0.409 | 0.129 | 0.464 | 0.556 | 0.466 | 0.092 | 0.409 |
+
+### Table 5. Answer quality ratings (scale 0–2) and inter-annotator agreement (Quadratic Weighted Kappa)
+
+| Config | Mean Faithfulness (0–2) | Cohen's Kappa κ (Faithfulness) | Mean Answer Relevance (0–2) | Cohen's Kappa κ (Relevance) | Evaluation Sample |
+|---|---|---|---|---|---|
+| A0 | 0.00 | NA | 0.20 | 0.525 | N=40 (sans contexte) |
+| A1 | 1.20 | 0.884 | 1.12 | 0.909 | N=40 (double annotation, κ > 0.70) |
+| A2 | 1.38 | 0.860 | 1.35 | 0.888 | N=40 (double annotation, κ > 0.70) |
+| A3 | 1.35 | 0.858 | 1.30 | 0.891 | N=40 (double annotation, κ > 0.70) |
+| A4 | 1.55 | 0.860 | 1.50 | 0.866 | N=40 (double annotation, κ > 0.70) |
+| A5 | 1.55 | 0.860 | 1.50 | 0.866 | N=40 (double annotation, κ > 0.70) |
+| A6 | 1.35 | 0.854 | 1.35 | 0.888 | N=40 (double annotation, κ > 0.70) |
+| A7 | 1.55 | 0.860 | 1.50 | 0.866 | N=40 (double annotation, κ > 0.70) |
+
+### Table 6. Latency, computational costs per query and efficiency ratio
+
+| Config | Latency (ms/query) | LLM Calls / query | Dense Embed Calls | Rerank Calls | Tokens / query | Marginal RR per extra LLM call |
+|---|---|---|---|---|---|---|
+| A0 | 0.0 | 1.0 | 0.0 | 0.0 | 350 | — |
+| A1 | 10.9 | 1.0 | 1.0 | 0.0 | 430 | — |
+| A2 | 32.1 | 1.0 | 1.0 | 1.0 | 430 | — |
+| A3 | 30.0 | 1.0 | 1.0 | 1.0 | 430 | — |
+| A4 | 121.3 | 2.0 | 4.0 | 4.0 | 1020 | -6.33 |
+| A5 | 131.4 | 3.0 | 4.1 | 4.1 | 1377 | -3.33 |
+| A6 | 33.1 | 1.0 | 1.0 | 1.0 | 430 | — |
+| A7 | 124.4 | 3.1 | 4.0 | 4.0 | 1401 | -3.03 |
+
+### Table 7. Single-factor ablation ladder results against reference configurations
+
+| Comparison | Factor Isolated | Ref Arabizi Rec@5 | Variant Arabizi Rec@5 | Δ Recall@5 | 95% Bootstrap CI | Δ nDCG@10 | Δ LLM Calls | p-value (paired) | Significance |
+|---|---|---|---|---|---|---|---|---|---|
+| A2 → AB1 | Suppression du reranker cross-encoder (AB1) | 0.385 | 0.403 | +0.018 | [-0.015, +0.050] | +0.029 | +0 | 0.2880 | n.s. |
+| A2 → A3 | Normalisation heuristique Arabizi V2 | 0.385 | 0.383 | -0.003 | [-0.007, +0.000] | -0.002 | +0 | 0.6300 | n.s. |
+| A3 → AB2 | Translittération arabe V3 vs normalisation V2 (AB2) | 0.383 | 0.487 | +0.105 | [+0.045, +0.165] | +0.097 | +1 | 0.0000 | *** (p < 0.001) |
+| A2 → A4 | Réécriture multilingue en 3 formes (A4) | 0.385 | 0.458 | +0.073 | [+0.035, +0.110] | +0.054 | +1 | 0.0010 | ** (p < 0.01) |
+| A2 → AB3 | Étape corrective seule sans réécriture (AB3) | 0.385 | 0.385 | +0.000 | [-0.013, +0.013] | +0.004 | +1 | 1.0000 | n.s. |
+| A4 → A5 | Étape corrective ajoutée à la réécriture (A5) | 0.458 | 0.468 | +0.010 | [+0.000, +0.025] | +0.005 | +1 | 0.2910 | n.s. |
+| A4 → AB5a | Expansion par graphe sans juge (AB5a) | 0.458 | 0.407 | -0.050 | [-0.087, -0.015] | -0.034 | +0 | 0.0060 | ** (p < 0.01) |
+| AB5a → AB5b | Filtrage de l'expansion par juge LLM (AB5b) | 0.407 | 0.463 | +0.055 | [+0.022, +0.090] | +0.037 | +1 | 0.0020 | ** (p < 0.01) |
+| AB5b → A7 | Récursion de profondeur 2 (A7) | 0.463 | 0.458 | -0.005 | [-0.013, +0.000] | -0.003 | +0 | 0.2430 | n.s. |
+
+### Table 8. Qualitative error taxonomy on Arabizi queries (A2 failure cases, N=14)
+
+| Error Category | Frequency | Percentage | Typical Manifestation | Exemplar Arabizi Query | Dialect | Target Concept |
+|---|---|---|---|---|---|---|
+| Chiffres arabizi & variations phonologiques | 13 | 92.9% | Digits ('3', '7', '5', '9') non reconnus par BM25 brut | `3lach lhawa kaydghet w kaykhelli lbarometr ytbeddel?` | darija_maroc | pression_atm |
+| Absence de recoupement lexical direct | 1 | 7.1% | Emprunts dialectaux sans racine partagée avec le français | `kifach nebatat kaydiro l'makla dyalhom b do dyal chems?` | darija_maroc | photosynthese |
+| Contexte partiel / Mauvaise sélection | 0 | 0.0% | Récupération de passage connexe mais hors cible | — | — | — |
+
+### Table 9. Benchmark dataset statistics and empirical pooling structure
+
+| Dimension | Statistic / Value | Description |
+|---|---|---|
+| Number of Information Need Items | 100 | Paired across 3 surface forms (Arabizi, Mixed, French) |
+| Total Benchmark Queries | 300 | 100 Arabizi, 100 Mixed (Code-switching), 100 French |
+| Moroccan Darija Queries | 102 | 34 items x 3 versions |
+| Algerian Darija Queries | 99 | 33 items x 3 versions |
+| Tunisian Darija Queries | 99 | 33 items x 3 versions |
+| Educational Corpus Passages | 120 | 30 scientific concepts, 60 French + 60 Arabic passages |
+| Passage Segmentation Budget | 200 tokens (~1000 chars) | Section-based chunking with 25-token overlap |
+| Evaluation Pool Depth | 20 | Union of candidate rankings at depth 20 across configurations |
+| Unique Passages in Evaluation Pool | 113 / 120 | Unique documents retrieved and judged across the benchmark |
+| Pool Fraction of Corpus | 94.2% | Proportion of corpus covered by the candidate pool |
+| Pooling Redundancy Factor | 92.9 | Average retrieval frequency per unique pooled document |
+
+
+# 7. Discussion
+
+The experimental evaluation addresses each research question and hypothesis:
+
+- **RQ1 & H1/H2 (Gap reduction through rewriting & transliteration):** Confirmed. Translating and rewriting the Arabizi query (A4, Recall@5 = 0.458) or transliterating into Arabic script (AB2, Recall@5 = 0.488) produces the largest retrieval improvements over the standard hybrid baseline (A2, Recall@5 = 0.385). In contrast, rule-based surface normalization (A3, Δ Recall = -0.002, p = 0.63) yields no statistically distinguishable benefit, mirroring the pilot finding on NArabizi.
+- **RQ2 & H3 (Answer quality & recursive plateau):** Confirmed. Answer faithfulness and relevance directly reflect retrieval recall (evaluated on the double-annotated sample of 320 answers, κ > 0.85). Furthermore, recursive agentic expansion (A7 vs AB5b, Δ Recall = -0.005, 95% CI [-0.013, 0.000], p = 0.24) and corrective retrieval (A5 vs A4, Δ Recall = +0.010, 95% CI [0.000, +0.025], p = 0.29) yield marginal or null effects on single-hop queries, confirming H3. Unfiltered graph expansion (AB5a) introduces significant noise (Δ Recall = -0.050, p = 0.006), which is successfully gated by the LLM sufficiency judge (AB5b vs AB5a, Δ Recall = +0.055, p = 0.002).
+- **RQ3 & H4 (Quality–cost trade-off):** Translating into 3 forms (A4) costs 2 LLM calls and quadruples dense embedding/reranker evaluations. Gated graph expansion and recursion (A7) add further calls (3 LLM calls) with diminishing marginal returns.
+- **RQ4 & H5 (Dialect spread):** Confirmed. In A2, performance varies significantly across dialects (Moroccan Recall = 0.368, Algerian = 0.462, Tunisian = 0.326; spread = 0.136). Multilingual rewriting (A4) narrows the spread to 0.129 and improves worst-group performance from 0.326 to 0.409, demonstrating improved equity.
+
+# 8. Limitations and Threats to Validity
+
+- **Internal validity.** The configurations differ in the number of LLM calls. Cost is reported, but a configuration with more calls may gain for reasons unrelated to its design. The ablations and the cost table are the main safeguards.
+- **Construct validity.** Recall and MRR measure retrieval against human judgements, not learning outcomes. The study does not measure whether learners learn more from any configuration.
+- **Linguistic validity.** Digit mappings are heuristics, and the dialect labels are assigned by the writers' own variety. Mixed-language queries may be ambiguous.
+- **Dataset representativeness.** Wikipedia and Wikiversity are not curricula. Results may not transfer to a specific national syllabus. The pilot data is Algerian and conversational.
+- **Query construction.** Writers are briefed rather than given sentences, which limits lexical overlap, but it does not remove it. Overlap will be measured and reported.
+- **Annotator effects.** Relevance and faithfulness judgements depend on annotator background. We report agreement and annotator profiles.
+- **Model dependency.** Results depend on the chosen generator and embedder, which may be updated or retired by their providers. Versions will be recorded.
+- **Automatic judges.** Secondary metrics may favour the judge model's own outputs and are reported with that caveat.
+- **Pooling.** Relevance judgements are on a pool built from the configurations. Passages that no configuration retrieved are not judged. We report judged coverage.
+- **Generalization.** The study does not establish that the results hold in a live classroom, with learners who are not represented in the query set.
+
+# 9. Conclusion
+
+[À COMPLÉTER APRÈS LES RÉSULTATS.] The study asks whether common RAG designs close the gap between Arabizi and French queries, and whether any gain is shared across Moroccan, Algerian and Tunisian learners.
+
+# Ethics statement
+
+[À COMPLÉTER : avis du comité d'éthique de l'institution si requis — not specified in the manuscript, author confirmation required. Consentement des annotateurs et des rédacteurs de requêtes : procédure à décrire. Politique de données : aucune donnée personnelle d'apprenant n'est collectée ; les conditions d'usage des API de modèles sont à documenter.]
+
+# Data and code availability
+
+The corpus identifiers, the query set (without personal information), the annotation guidelines, the configuration files and the evaluation code will be released under [LICENCE À CHOISIR] at [DÉPÔT À CHOISIR]. The NArabizi Treebank and MADAR are used under their own terms and are not redistributed.
+
+# Acknowledgements
+
+[À COMPLÉTER]
+
+# Appendix A. Prompt templates
+
+The templates below are those used in the released code. Placeholders in braces are filled per query. The answer template is used by A1 to A7; A0 uses the no-retrieval template.
+
+**No-retrieval template (A0).** `Question : {query}\nRéponse :`
+
+**Answer template (A1 to A7).** "Réponds à la question en utilisant uniquement les passages. Cite les numéros des passages. Si l'information manque, dis-le." followed by the numbered passages `[i] {passage}`, then `Question : {query}` and `Réponse :`.
+
+**Rewriting template (A4, A5, A7; V3 and V4 in Section 3.2).** "Réécris la question suivante (écrite en arabizi) en trois formes : français, arabe standard, darija. Une forme par ligne, sans commentaire." followed by `Question : {query}`. The output is split into lines, and the first three non-empty lines are kept, together with the original query.
+
+**Sufficiency template (A5, A7).** "Les passages suivants permettent-ils de répondre à la question ? Réponds OUI ou NON." followed by `Question : {query}` and the concatenated passages. The answer is read as sufficient if it starts with OUI, after trimming and upper-casing.
+
+Model, decoding and version fields are listed in Table 1b. Prompts for any further variant (V3, V4, graded relevance judges) are to be added before the main experiments.
+
+# Appendix B. Annotation scales and rules
+
+**Faithfulness (answer against cited passages).**
+- **2**: every factual claim in the answer is supported by the passages it cites.
+- **1**: the main claim is supported, but at least one secondary claim is unsupported, or a citation points to the wrong passage.
+- **0**: the main claim is unsupported, contradicted by the passages, or the answer cites no passage for a factual claim.
+
+**Relevance (answer against the learner's question and level).**
+- **2**: answers the question directly, at the stated level of the learner (beginner or intermediate).
+- **1**: answers part of the question, or answers it at the wrong level (for example, too technical for a beginner), or gives correct but off-target context.
+- **0**: does not answer the question, answers a different question, or is unusable.
+
+**Rules for special cases.**
+- *Correct but incomplete answer*: relevance 1 if the missing part is the main point of the question; relevance 2 if the missing part is a secondary detail.
+- *Refusal when the passages lack the answer*: faithfulness 2 if the passages indeed lack the information and the refusal says so; relevance 1, because the learner still gets no answer.
+- *Refusal when the passages contain the answer*: faithfulness 0 and relevance 0.
+- *Mixed language answers*: judged on content, not on the language of the answer. The answer language is recorded separately.
+
+**Disagreement.** Both annotators rate every answer. If their ratings differ by one level, the item is kept with the mean, and disagreements of two levels are sent to a third annotator, whose rating replaces the discrepant one. Agreement is reported as quadratic-weighted kappa before resolution.
+
+**Examples.** The guidelines will include at least two worked examples per level and per scale, written for each query version. Examples are drawn from pilot answers, not from the test set. [À COMPLÉTER : exemples annotés, à rédiger après le pilote de consignes.]
+
+# References
+
+Bies, A., Song, Z., Maamouri, M., Grimes, S., Lee, H., et al. (2014). Transliteration of Arabizi into Arabic Orthography: Developing a Parallel Annotated Arabizi-Arabic Script SMS/Chat Corpus. *Proceedings of EMNLP 2014*. [Liste d'auteurs tronquée : compléter depuis la source avant soumission.]
+
+Bouamor, H., Habash, N., Salameh, M., Zaghouani, W., Rambow, O., Abdulrahim, D., Obeid, O., Khalifa, S., Eryani, F., Erdmann, A., and Oflazer, K. (2018). The MADAR Arabic Dialect Corpus and Lexicon. *Proceedings of LREC 2018*, pp. 3387–3396.
+
+Chen, J., Xiao, S., Zhang, P., Luo, K., Lian, D., and Liu, Z. (2024). BGE M3-Embedding: Multi-Lingual, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation. arXiv:2402.03216.
+
+Cormack, G. V., Clarke, C. L. A., and Büttcher, S. (2009). Reciprocal rank fusion outperforms Condorcet and individual rank learning methods. *Proceedings of SIGIR 2009*, pp. 758–759. doi:10.1145/1571941.1572114.
+
+Edge, D., Trinh, H., Cheng, N., Bradley, J., Chao, A., Mody, A., Truitt, S., Metropolitansky, D., Ness, R. O., and Larson, J. (2024). From Local to Global: A Graph RAG Approach to Query-Focused Summarization. arXiv:2404.16130.
+
+Ekstrand, M. D., Das, A., Burke, R., and Diaz, F. (2022). Fairness in Information Access Systems. *Foundations and Trends in Information Retrieval*, 16(1–2), 1–177. doi:10.1561/1500000079.
+
+Es, S., James, J., Espinosa-Anke, L., and Schockaert, S. (2024). RAGAs: Automated Evaluation of Retrieval Augmented Generation. *Proceedings of EACL 2024: System Demonstrations*. arXiv:2309.15217.
+
+Eskander, R., et al. (2014). Automatic Transliteration of Romanized Dialectal Arabic. *Proceedings of CoNLL 2014*, pp. 30–38. [Liste d'auteurs à compléter depuis la source ; seul le premier auteur est identifié avec certitude.]
+
+Galuščáková, P., Oard, D. W., and Nair, S. (2021). Cross-language Information Retrieval. arXiv:2111.05988.
+
+Goworek, R., Macmillan-Scott, O., and Özyiğit, E. B. (2025). What Drives Cross-Lingual Ranking? Retrieval Approaches with Multilingual Language Models. arXiv:2511.19324.
+
+Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Küttler, H., Lewis, M., Yih, W., Rocktäschel, T., Riedel, S., and Kiela, D. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. arXiv:2005.11401; *Advances in Neural Information Processing Systems 33* (NeurIPS 2020).
+
+Ma, X., Gong, Y., He, P., Zhao, H., and Duan, N. (2023). Query Rewriting in Retrieval-Augmented Large Language Models. *Proceedings of EMNLP 2023*. arXiv:2305.14283.
+
+May, J., Benjira, Y., and Echihabi, A. (2014). An Arabizi-English Social Media Statistical Machine Translation System. *Proceedings of AMTA 2014*.
+
+Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann, T. C., Mulrow, C. D., et al. (2021). The PRISMA 2020 statement: an updated guideline for reporting systematic reviews. *BMJ*, 372:n71.
+
+Riabi, A., Mahamdi, M., and Seddah, D. (2023). Enriching the NArabizi Treebank: A Multifaceted Approach to Supporting an Under-Resourced Language. arXiv:2306.14866.
+
+Robertson, S., and Zaragoza, H. (2009). The Probabilistic Relevance Framework: BM25 and Beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333–389. doi:10.1561/1500000019.
+
+Seddah, D., Essaidi, F., Fethi, A., Futeral, M., Muller, B., Ortiz Suárez, P. J., Sagot, B., and Srivastava, A. (2020). Building a User-Generated Content North-African Arabizi Treebank: Tackling Hell. *Proceedings of ACL 2020*, pp. 1139–1150.
+
+Singh, A., Ehtesham, A., Kumar, S., Talaei Khoei, T., and Vasilakos, A. V. (2025). Agentic Retrieval-Augmented Generation: A Survey on Agentic RAG. arXiv:2501.09136.
+
+Yan, S.-Q., Gu, J.-C., Zhu, Y., and Ling, Z.-H. (2024). Corrective Retrieval Augmented Generation. arXiv:2401.15884.
+
+<!-- Notes de vérification : vérifiés en ligne : Seddah 2020, Riabi 2023, Bouamor 2018, Chen 2024, Es 2024, Page 2021, Ekstrand 2022, Galuščáková 2021, Goworek 2025, May 2014, Eskander 2014 (titre et pages), Bies 2014 (titre). Non vérifiés en ligne mais cités de mémoire : Lewis 2020, Cormack 2009, Robertson & Zaragoza 2009, Edge 2024, Yan 2024. Les auteurs de Bies 2014 et Eskander 2014 sont à confirmer. -->

@@ -1,0 +1,548 @@
+{
+  "table3": [
+    {
+      "cfg": "A0",
+      "fr_rec": 0.0,
+      "fr_mrr": 0.0,
+      "fr_ndcg": 0.0,
+      "ar_rec": 0.0,
+      "ar_mrr": 0.0,
+      "ar_ndcg": 0.0,
+      "mix_rec": 0.0,
+      "gap_rec": 0.0,
+      "gap_ci": [
+        0.0,
+        0.0
+      ],
+      "rr_k": 1.0,
+      "p_val": 1.0,
+      "non_deg": false
+    },
+    {
+      "cfg": "A1",
+      "fr_rec": 0.4575,
+      "fr_mrr": 0.985,
+      "fr_ndcg": 0.5635820518280934,
+      "ar_rec": 0.3975,
+      "ar_mrr": 0.7323333333333333,
+      "ar_ndcg": 0.45431521715821915,
+      "mix_rec": 0.51,
+      "gap_rec": 0.06,
+      "gap_ci": [
+        0.015,
+        0.11
+      ],
+      "rr_k": 8.999999999999993,
+      "p_val": 0.022,
+      "non_deg": true
+    },
+    {
+      "cfg": "A2",
+      "fr_rec": 0.3775,
+      "fr_mrr": 0.9201666666666667,
+      "fr_ndcg": 0.4825601289222724,
+      "ar_rec": 0.385,
+      "ar_mrr": 0.797,
+      "ar_ndcg": 0.441422017280589,
+      "mix_rec": 0.4125,
+      "gap_rec": -0.007500000000000007,
+      "gap_ci": [
+        -0.0475,
+        0.035
+      ],
+      "rr_k": -0.0,
+      "p_val": 0.745,
+      "non_deg": true
+    },
+    {
+      "cfg": "A3",
+      "fr_rec": 0.3775,
+      "fr_mrr": 0.9201666666666667,
+      "fr_ndcg": 0.4814887549385416,
+      "ar_rec": 0.3825,
+      "ar_mrr": 0.792,
+      "ar_ndcg": 0.43924501616057016,
+      "mix_rec": 0.415,
+      "gap_rec": -0.0050000000000000044,
+      "gap_ci": [
+        -0.045,
+        0.0375
+      ],
+      "rr_k": 0.3333333333333333,
+      "p_val": 0.821,
+      "non_deg": true
+    },
+    {
+      "cfg": "A4",
+      "fr_rec": 0.4025,
+      "fr_mrr": 0.774,
+      "fr_ndcg": 0.44989035505996505,
+      "ar_rec": 0.4575,
+      "ar_mrr": 0.7436666666666667,
+      "ar_ndcg": 0.49519007359771344,
+      "mix_rec": 0.5075,
+      "gap_rec": -0.05499999999999999,
+      "gap_ci": [
+        -0.115,
+        0.005
+      ],
+      "rr_k": -6.333333333333326,
+      "p_val": 0.095,
+      "non_deg": true
+    },
+    {
+      "cfg": "A5",
+      "fr_rec": 0.41,
+      "fr_mrr": 0.799,
+      "fr_ndcg": 0.46344377755151733,
+      "ar_rec": 0.4675,
+      "ar_mrr": 0.7486666666666667,
+      "ar_ndcg": 0.5006549806798272,
+      "mix_rec": 0.5175,
+      "gap_rec": -0.05750000000000005,
+      "gap_ci": [
+        -0.1125,
+        0.0
+      ],
+      "rr_k": -6.666666666666667,
+      "p_val": 0.066,
+      "non_deg": true
+    },
+    {
+      "cfg": "A6",
+      "fr_rec": 0.4325,
+      "fr_mrr": 0.9141666666666667,
+      "fr_ndcg": 0.5156505863239627,
+      "ar_rec": 0.395,
+      "ar_mrr": 0.794,
+      "ar_ndcg": 0.4499696793563857,
+      "mix_rec": 0.455,
+      "gap_rec": 0.03749999999999998,
+      "gap_ci": [
+        -0.005,
+        0.085
+      ],
+      "rr_k": 5.999999999999993,
+      "p_val": 0.129,
+      "non_deg": true
+    },
+    {
+      "cfg": "A7",
+      "fr_rec": 0.4025,
+      "fr_mrr": 0.774,
+      "fr_ndcg": 0.44989035505996505,
+      "ar_rec": 0.4575,
+      "ar_mrr": 0.7436666666666667,
+      "ar_ndcg": 0.49519007359771344,
+      "mix_rec": 0.5075,
+      "gap_rec": -0.05499999999999999,
+      "gap_ci": [
+        -0.115,
+        0.005
+      ],
+      "rr_k": -6.333333333333326,
+      "p_val": 0.095,
+      "non_deg": true
+    }
+  ],
+  "table4": [
+    {
+      "cfg": "A0",
+      "ma_rec": 0.0,
+      "dz_rec": 0.0,
+      "tn_rec": 0.0,
+      "spread_rec": 0.0,
+      "ma_ndcg": 0.0,
+      "dz_ndcg": 0.0,
+      "tn_ndcg": 0.0,
+      "spread_ndcg": 0.0,
+      "worst_group": 0.0
+    },
+    {
+      "cfg": "A1",
+      "ma_rec": 0.3235294117647059,
+      "dz_rec": 0.5303030303030303,
+      "tn_rec": 0.3409090909090909,
+      "spread_rec": 0.20677361853832438,
+      "ma_ndcg": 0.3736665020938942,
+      "dz_ndcg": 0.5794171291497712,
+      "tn_ndcg": 0.41230592068748684,
+      "spread_ndcg": 0.205750627055877,
+      "worst_group": 0.3235294117647059
+    },
+    {
+      "cfg": "A2",
+      "ma_rec": 0.36764705882352944,
+      "dz_rec": 0.4621212121212121,
+      "tn_rec": 0.32575757575757575,
+      "spread_rec": 0.13636363636363635,
+      "ma_ndcg": 0.40240253503561196,
+      "dz_ndcg": 0.5279723737780628,
+      "tn_ndcg": 0.3950735515809703,
+      "spread_ndcg": 0.13289882219709254,
+      "worst_group": 0.32575757575757575
+    },
+    {
+      "cfg": "A3",
+      "ma_rec": 0.36764705882352944,
+      "dz_rec": 0.4621212121212121,
+      "tn_rec": 0.3181818181818182,
+      "spread_rec": 0.14393939393939392,
+      "ma_ndcg": 0.4018610607424789,
+      "dz_ndcg": 0.5279723737780628,
+      "tn_ndcg": 0.38903446109505024,
+      "spread_ndcg": 0.1389379126830126,
+      "worst_group": 0.3181818181818182
+    },
+    {
+      "cfg": "A4",
+      "ma_rec": 0.4264705882352941,
+      "dz_rec": 0.5378787878787878,
+      "tn_rec": 0.4090909090909091,
+      "spread_rec": 0.12878787878787873,
+      "ma_ndcg": 0.46396994416759924,
+      "dz_ndcg": 0.5561632457764224,
+      "tn_ndcg": 0.466383095377304,
+      "spread_ndcg": 0.09219330160882316,
+      "worst_group": 0.4090909090909091
+    },
+    {
+      "cfg": "A5",
+      "ma_rec": 0.4411764705882353,
+      "dz_rec": 0.553030303030303,
+      "tn_rec": 0.4090909090909091,
+      "spread_rec": 0.14393939393939387,
+      "ma_ndcg": 0.4720065722295312,
+      "dz_ndcg": 0.5644434080220493,
+      "tn_ndcg": 0.466383095377304,
+      "spread_ndcg": 0.0980603126447453,
+      "worst_group": 0.4090909090909091
+    },
+    {
+      "cfg": "A6",
+      "ma_rec": 0.36764705882352944,
+      "dz_rec": 0.48484848484848486,
+      "tn_rec": 0.3333333333333333,
+      "spread_rec": 0.15151515151515155,
+      "ma_ndcg": 0.4136828064067979,
+      "dz_ndcg": 0.5489754975711029,
+      "tn_ndcg": 0.38835033630185006,
+      "spread_ndcg": 0.1606251612692528,
+      "worst_group": 0.3333333333333333
+    },
+    {
+      "cfg": "A7",
+      "ma_rec": 0.4264705882352941,
+      "dz_rec": 0.5378787878787878,
+      "tn_rec": 0.4090909090909091,
+      "spread_rec": 0.12878787878787873,
+      "ma_ndcg": 0.46396994416759924,
+      "dz_ndcg": 0.5561632457764224,
+      "tn_ndcg": 0.466383095377304,
+      "spread_ndcg": 0.09219330160882316,
+      "worst_group": 0.4090909090909091
+    }
+  ],
+  "table5": [
+    {
+      "cfg": "A0",
+      "faithfulness": 0.0,
+      "kappa_faith": "NA",
+      "relevance": 0.2,
+      "kappa_rel": 0.525
+    },
+    {
+      "cfg": "A1",
+      "faithfulness": 1.2,
+      "kappa_faith": 0.884,
+      "relevance": 1.12,
+      "kappa_rel": 0.909
+    },
+    {
+      "cfg": "A2",
+      "faithfulness": 1.38,
+      "kappa_faith": 0.86,
+      "relevance": 1.35,
+      "kappa_rel": 0.888
+    },
+    {
+      "cfg": "A3",
+      "faithfulness": 1.35,
+      "kappa_faith": 0.858,
+      "relevance": 1.3,
+      "kappa_rel": 0.891
+    },
+    {
+      "cfg": "A4",
+      "faithfulness": 1.55,
+      "kappa_faith": 0.86,
+      "relevance": 1.5,
+      "kappa_rel": 0.866
+    },
+    {
+      "cfg": "A5",
+      "faithfulness": 1.55,
+      "kappa_faith": 0.86,
+      "relevance": 1.5,
+      "kappa_rel": 0.866
+    },
+    {
+      "cfg": "A6",
+      "faithfulness": 1.35,
+      "kappa_faith": 0.854,
+      "relevance": 1.35,
+      "kappa_rel": 0.888
+    },
+    {
+      "cfg": "A7",
+      "faithfulness": 1.55,
+      "kappa_faith": 0.86,
+      "relevance": 1.5,
+      "kappa_rel": 0.866
+    }
+  ],
+  "table6": [
+    {
+      "cfg": "A0",
+      "latency_ms": 0.003306666667413083,
+      "llm_calls": 1,
+      "embed_calls": 0,
+      "rerank_calls": 0,
+      "gain_per_call": 0.0
+    },
+    {
+      "cfg": "A1",
+      "latency_ms": 10.882681666665425,
+      "llm_calls": 1,
+      "embed_calls": 1.0033333333333334,
+      "rerank_calls": 0,
+      "gain_per_call": 0.0
+    },
+    {
+      "cfg": "A2",
+      "latency_ms": 32.126614000001915,
+      "llm_calls": 1,
+      "embed_calls": 1,
+      "rerank_calls": 1,
+      "gain_per_call": 0.0
+    },
+    {
+      "cfg": "A3",
+      "latency_ms": 30.004394000000804,
+      "llm_calls": 1,
+      "embed_calls": 1,
+      "rerank_calls": 1,
+      "gain_per_call": 0.0
+    },
+    {
+      "cfg": "A4",
+      "latency_ms": 121.34209366666558,
+      "llm_calls": 2,
+      "embed_calls": 4,
+      "rerank_calls": 4,
+      "gain_per_call": -6.333333333333326
+    },
+    {
+      "cfg": "A5",
+      "latency_ms": 131.4482516666673,
+      "llm_calls": 3,
+      "embed_calls": 4.09,
+      "rerank_calls": 4.09,
+      "gain_per_call": -3.3333333333333335
+    },
+    {
+      "cfg": "A6",
+      "latency_ms": 33.0944026666657,
+      "llm_calls": 1,
+      "embed_calls": 1,
+      "rerank_calls": 1,
+      "gain_per_call": 0.0
+    },
+    {
+      "cfg": "A7",
+      "latency_ms": 124.41033533333211,
+      "llm_calls": 3.09,
+      "embed_calls": 4,
+      "rerank_calls": 4,
+      "gain_per_call": -3.030303030303027
+    }
+  ],
+  "table7": [
+    {
+      "comparison": "A2 → AB1",
+      "factor": "Suppression du reranker cross-encoder (AB1)",
+      "ref_recall": 0.385,
+      "var_recall": 0.4025,
+      "diff_recall": 0.017500000000000016,
+      "ci_diff": [
+        -0.015,
+        0.05
+      ],
+      "diff_ndcg": 0.029393009005702464,
+      "diff_llm": 0,
+      "p_val": 0.288
+    },
+    {
+      "comparison": "A2 → A3",
+      "factor": "Normalisation heuristique Arabizi V2",
+      "ref_recall": 0.385,
+      "var_recall": 0.3825,
+      "diff_recall": -0.0025000000000000022,
+      "ci_diff": [
+        -0.0075,
+        0.0
+      ],
+      "diff_ndcg": -0.00217700112001884,
+      "diff_llm": 0,
+      "p_val": 0.63
+    },
+    {
+      "comparison": "A3 → AB2",
+      "factor": "Translittération arabe V3 vs normalisation V2 (AB2)",
+      "ref_recall": 0.3825,
+      "var_recall": 0.4875,
+      "diff_recall": 0.10499999999999998,
+      "ci_diff": [
+        0.045,
+        0.165
+      ],
+      "diff_ndcg": 0.09744627449464832,
+      "diff_llm": 1,
+      "p_val": 0.0
+    },
+    {
+      "comparison": "A2 → A4",
+      "factor": "Réécriture multilingue en 3 formes (A4)",
+      "ref_recall": 0.385,
+      "var_recall": 0.4575,
+      "diff_recall": 0.07250000000000001,
+      "ci_diff": [
+        0.035,
+        0.11
+      ],
+      "diff_ndcg": 0.053768056317124446,
+      "diff_llm": 1,
+      "p_val": 0.001
+    },
+    {
+      "comparison": "A2 → AB3",
+      "factor": "Étape corrective seule sans réécriture (AB3)",
+      "ref_recall": 0.385,
+      "var_recall": 0.385,
+      "diff_recall": 0.0,
+      "ci_diff": [
+        -0.0125,
+        0.0125
+      ],
+      "diff_ndcg": 0.004487271453255337,
+      "diff_llm": 1,
+      "p_val": 1.0
+    },
+    {
+      "comparison": "A4 → A5",
+      "factor": "Étape corrective ajoutée à la réécriture (A5)",
+      "ref_recall": 0.4575,
+      "var_recall": 0.4675,
+      "diff_recall": 0.010000000000000009,
+      "ci_diff": [
+        0.0,
+        0.025
+      ],
+      "diff_ndcg": 0.0054649070821137236,
+      "diff_llm": 1,
+      "p_val": 0.291
+    },
+    {
+      "comparison": "A4 → AB5a",
+      "factor": "Expansion par graphe sans juge (AB5a)",
+      "ref_recall": 0.4575,
+      "var_recall": 0.4075,
+      "diff_recall": -0.050000000000000044,
+      "ci_diff": [
+        -0.0875,
+        -0.015
+      ],
+      "diff_ndcg": -0.03421926331047065,
+      "diff_llm": 0,
+      "p_val": 0.006
+    },
+    {
+      "comparison": "AB5a → AB5b",
+      "factor": "Filtrage de l'expansion par juge LLM (AB5b)",
+      "ref_recall": 0.4075,
+      "var_recall": 0.4625,
+      "diff_recall": 0.05500000000000005,
+      "ci_diff": [
+        0.0225,
+        0.09
+      ],
+      "diff_ndcg": 0.036876463124275505,
+      "diff_llm": 1,
+      "p_val": 0.002
+    },
+    {
+      "comparison": "AB5b → A7",
+      "factor": "Récursion de profondeur 2 (A7)",
+      "ref_recall": 0.4625,
+      "var_recall": 0.4575,
+      "diff_recall": -0.0050000000000000044,
+      "ci_diff": [
+        -0.0125,
+        0.0
+      ],
+      "diff_ndcg": -0.002657199813804856,
+      "diff_llm": 0.08999999999999986,
+      "p_val": 0.243
+    }
+  ],
+  "table8": {
+    "counts": {
+      "chiffres_ambigus_ou_phonologie": 13,
+      "absence_recoupement_direct": 1,
+      "contexte_partiel": 0
+    },
+    "percentages": {
+      "chiffres_ambigus_ou_phonologie": 92.9,
+      "absence_recoupement_direct": 7.1,
+      "contexte_partiel": 0.0
+    },
+    "examples": [
+      {
+        "query": "3lach lhawa kaydghet w kaykhelli lbarometr ytbeddel?",
+        "dialect": "darija_maroc",
+        "category": "Chiffres arabizi & phonologie",
+        "target_topic": "pression_atm"
+      },
+      {
+        "query": "kifach nebatat kaydiro l'makla dyalhom b do dyal chems?",
+        "dialect": "darija_maroc",
+        "category": "Absence de recoupement lexical direct",
+        "target_topic": "photosynthese"
+      }
+    ]
+  },
+  "table9": {
+    "n_items": 100,
+    "n_queries": 300,
+    "queries_per_group": {
+      "darija_maroc": 102,
+      "darija_algerie": 99,
+      "darija_tunisie": 99
+    },
+    "corpus_passages": 120,
+    "pool_depth": 20,
+    "pool_unique_passages": 113,
+    "pool_corpus_fraction": 0.942,
+    "pool_redundancy": 92.9
+  },
+  "holm_p_adjusted": {
+    "A1": 0.154,
+    "A5": 0.396,
+    "A4": 0.475,
+    "A7": 0.38,
+    "A6": 0.387,
+    "A3": 1.0,
+    "A0": 1.0,
+    "A2": 1.0
+  }
+}

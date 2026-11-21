@@ -1,0 +1,17 @@
+query_id,query_type,query_text,relevant_ids,dialect,learner_level,annotator_notes
+S01,arabizi,3lach lhawa katdghet kolma tl3ti lforme?,fr::pression,darija_maroc,debutant,SYNTHETIQUE
+S02,arabizi,ch7al kay7sseb lbarometr?,fr::pression,darija_maroc,intermediaire,SYNTHETIQUE
+S03,arabizi,kifach nebatat kay3tiw lflo7?,fr::photosynthese,darija_maroc,debutant,SYNTHETIQUE
+S04,arabizi,wesh lkhlia fiha lnwat?,fr::cellule,darija_maroc,debutant,SYNTHETIQUE
+S05,arabizi,chno howa nidam chamsi?,fr::systeme_solaire,darija_maroc,debutant,SYNTHETIQUE
+S06,arabizi,3lach class 1789 kanet thawra?,fr::revolution,darija_maroc,intermediaire,SYNTHETIQUE
+S07,arabizi,chkoun li kay9ol lhypotenuse?,fr::pythagore,darija_maroc,intermediaire,SYNTHETIQUE
+S08,arabizi,chno kay9dem lnafas f jism?,fr::respiration,darija_maroc,debutant,SYNTHETIQUE
+S09,arabizi,kifach ykhdem courant lkahraba?,fr::electricite,darija_maroc,debutant,SYNTHETIQUE
+S10,arabizi,ch7al ta3 lanpere f courant?,fr::electricite,darija_maroc,intermediaire,SYNTHETIQUE
+S11,fr,Comment la plante transforme la lumière en énergie ?,fr::photosynthese,fr,debutant,SYNTHETIQUE
+S12,fr,Que mesure le baromètre ?,fr::pression,fr,debutant,SYNTHETIQUE
+S13,fr,Quelle est l'unité de base du vivant ?,fr::cellule,fr,debutant,SYNTHETIQUE
+S14,fr,Quand a commencé la Révolution française ?,fr::revolution,fr,debutant,SYNTHETIQUE
+S15,fr,Qu'affirme le théorème de Pythagore ?,fr::pythagore,fr,intermediaire,SYNTHETIQUE
+S16,fr,Quelle est l'unité de l'intensité du courant ?,fr::electricite,fr,intermediaire,SYNTHETIQUE

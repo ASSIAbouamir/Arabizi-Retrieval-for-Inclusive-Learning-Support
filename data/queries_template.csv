@@ -1,0 +1,4 @@
+query_id,query_type,query_text,relevant_ids,dialect,learner_level,annotator_notes
+EXEMPLE_01,arabizi,3lach lmoukhtaf kiy3ti lhawa?,fr::Pression atmosphérique,darija_maroc,debutant,LIGNE EXEMPLE à remplacer par une vraie annotation
+EXEMPLE_02,fr,Qu'est-ce que la pression atmosphérique ?,fr::Pression atmosphérique,fr,debutant,LIGNE EXEMPLE à remplacer par une vraie annotation
+EXEMPLE_03,mixed,c'est quoi la photosynthèse 7ta?,fr::Photosynthèse,darija_maroc,intermediaire,LIGNE EXEMPLE à remplacer par une vraie annotation

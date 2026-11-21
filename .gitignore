@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest / cache
+.pytest_cache/
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Large raw crawled text & archives
+*.tar.gz
+data/NArabizi_Treebank/Release_ACL2020/unlabeled_arabizi/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,11 @@
+
+Treebank data can be found in the Gold_Annotated directory (resp. Unlabeled data, see readme inside).
+
+Note: a bug has recently been discovered with a few sentences (<10) having their encoding in Mac Roman
+instead of UTF8. Will be fixed before the end of ACL.
+
+contact: djame.seddah@gmail.com
+
+July 5, 2020.
+Djamé Seddah
+   
