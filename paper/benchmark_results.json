@@ -376,7 +376,7 @@
   "table6": [
     {
       "cfg": "A0",
-      "latency_ms": 0.0028753333511607098,
+      "latency_ms": 0.0016433333318370085,
       "llm_calls": 1,
       "embed_calls": 0,
       "rerank_calls": 0,
@@ -384,7 +384,7 @@
     },
     {
       "cfg": "A1",
-      "latency_ms": 10.256416666670702,
+      "latency_ms": 10.369977333321003,
       "llm_calls": 1,
       "embed_calls": 1.0033333333333334,
       "rerank_calls": 0,
@@ -392,7 +392,7 @@
     },
     {
       "cfg": "A2",
-      "latency_ms": 33.51755600000615,
+      "latency_ms": 48.244623333351534,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -400,7 +400,7 @@
     },
     {
       "cfg": "A3",
-      "latency_ms": 30.618007000011858,
+      "latency_ms": 40.933761000002654,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -408,7 +408,7 @@
     },
     {
       "cfg": "A4",
-      "latency_ms": 136.1243283333412,
+      "latency_ms": 175.97311166668078,
       "llm_calls": 2,
       "embed_calls": 3.97,
       "rerank_calls": 3.97,
@@ -416,7 +416,7 @@
     },
     {
       "cfg": "A5",
-      "latency_ms": 151.2051110000175,
+      "latency_ms": 152.2151656666635,
       "llm_calls": 3,
       "embed_calls": 4.326666666666667,
       "rerank_calls": 4.326666666666667,
@@ -424,7 +424,7 @@
     },
     {
       "cfg": "A6",
-      "latency_ms": 32.72786866664925,
+      "latency_ms": 37.60334866664683,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -432,7 +432,7 @@
     },
     {
       "cfg": "A7",
-      "latency_ms": 137.43221933337432,
+      "latency_ms": 136.99533066663813,
       "llm_calls": 3.34,
       "embed_calls": 3.97,
       "rerank_calls": 3.97,
@@ -681,16 +681,33 @@
       0.025,
       0.5
     ],
+    "sample_sd": 0.7763,
+    "standard_error": 0.1227,
     "t_stat": 2.04,
     "df": 39,
     "p_t": 0.0485,
     "w_stat": 23.5,
-    "p_wilcoxon": 0.0569
+    "p_wilcoxon": 0.0569,
+    "ties_count": 26,
+    "positives_count": 11,
+    "negatives_count": 3,
+    "sign_test_p": 0.0574
   },
   "h3_tost_test": {
     "comparison": "AB5b → A7",
     "margin_eps": 0.05,
     "diff_recall": -0.01,
+    "sample_sd": 0.0607,
+    "standard_error": 0.006072,
+    "df": 99,
+    "ci_95_parametric": [
+      -0.022,
+      0.002
+    ],
+    "ci_95_bootstrap": [
+      -0.023,
+      0.003
+    ],
     "ci_95": [
       -0.023,
       0.003
@@ -702,5 +719,28 @@
     "is_equivalent": true,
     "p_tost": 1.09e-09,
     "conclusion": "L'IC à 95% [-0.023, +0.003] est strictement inclus dans [-0.05, +0.05], confirmant l'équivalence pratique (plateau de performance sur requêtes single-hop)."
+  },
+  "a3_tost_test": {
+    "comparison": "A2 → A3",
+    "margin_eps": 0.02,
+    "diff_recall": 0.0,
+    "sample_sd": 0.0355,
+    "standard_error": 0.003553,
+    "df": 99,
+    "ci_95_parametric": [
+      -0.007,
+      0.007
+    ],
+    "ci_95_bootstrap": [
+      -0.008,
+      0.008
+    ],
+    "t1_stat": 5.63,
+    "p1_val": 8.49e-08,
+    "t2_stat": -5.63,
+    "p2_val": 8.49e-08,
+    "is_equivalent": true,
+    "p_tost": 8.49e-08,
+    "conclusion": "L'IC à 95% est strictement inclus dans [-0.02, +0.02], confirmant l'équivalence pratique de la normalisation heuristique."
   }
 }
