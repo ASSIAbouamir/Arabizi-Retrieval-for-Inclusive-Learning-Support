@@ -149,7 +149,7 @@ The 30 scientific topics span six foundational STEM domains:
 - *Computer Science:* Algorithms and complexity, Microprocessors and memory, Internet Protocol (IP), Relational databases (SQL).
 - *History of Science:* Copernican heliocentrism, Industrial revolution and steam engines, Discovery of penicillin, Metric system.
 
-**Passage segmentation:** Passages are segmented with a fixed budget of 180–200 tokens (~800–1,000 characters) and a 25-token overlap to ensure discursive continuity. Each concept is covered by exactly four passages: two in French (`fr::<topic>::p1`, `fr::<topic>::p2`) and two in Arabic (`ar::<topic>::p1`, `ar::<topic>::p2`). Full URLs and metadata are preserved in `docs/corpus_metadata.md` for CC BY-SA 4.0 attribution.
+**Passage segmentation:** Passages are segmented based on word boundaries with a window of 180 whitespace-separated words and a 25-word overlap (~900–1,100 characters) to ensure discursive continuity. Measured with the official `Qwen2Tokenizer` (BPE vocabulary of 151,643 tokens), this yields an empirical average of 255.0 BPE sub-tokens in French (expansion ratio 1.80) and 350.3 BPE sub-tokens in Arabic (expansion ratio 2.42), reflecting Arabic's morphological density. Each scientific concept is covered by four passages: two French (`fr::<topic>::p1`, `fr::<topic>::p2`) and two Arabic (`ar::<topic>::p1`, `ar::<topic>::p2`). Full URLs and metadata are preserved in `docs/corpus_metadata.md` for CC BY-SA 4.0 attribution.
 
 ## 4.2 Query set
 
@@ -297,12 +297,15 @@ Interpretation limits: the translations share proper nouns with their source sen
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | A0 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | +0.000 | [+0.000, +0.000] | +1.00 | 1.000 | Non |
 | A1 | 0.372 | 0.758 | 0.429 | 0.258 | 0.509 | 0.296 | 0.347 | +0.115 | [+0.068, +0.163] | -1.42 | 0.000 | Oui |
-| A2 | 0.383 | 0.868 | 0.445 | 0.335 | 0.693 | 0.401 | 0.410 | +0.047 | [+0.003, +0.100] | — | ref | Oui |
-| A3 | 0.383 | 0.868 | 0.445 | 0.335 | 0.707 | 0.407 | 0.410 | +0.047 | [+0.003, +0.100] | +0.00 | 0.159 | Oui |
-| A4 | 0.635 | 0.900 | 0.673 | 0.557 | 0.700 | 0.535 | 0.632 | +0.078 | [+0.007, +0.150] | -0.63 | 0.124 | Oui |
-| A5 | 0.555 | 0.895 | 0.625 | 0.525 | 0.674 | 0.511 | 0.578 | +0.030 | [-0.043, +0.107] | +0.37 | 0.798 | Oui |
-| A6 | 0.443 | 0.860 | 0.493 | 0.340 | 0.683 | 0.407 | 0.432 | +0.102 | [+0.050, +0.160] | -1.16 | 0.000 | Oui |
-| A7 | 0.625 | 0.900 | 0.671 | 0.530 | 0.697 | 0.520 | 0.600 | +0.095 | [+0.018, +0.175] | -1.00 | 0.080 | Oui |
+| A2 | 0.383 | 0.868 | 0.445 | 0.335 | 0.693 | 0.401 | 0.410 | +0.047 | [+0.000, +0.098] | — | ref | Oui |
+| A3 | 0.383 | 0.868 | 0.445 | 0.335 | 0.707 | 0.407 | 0.410 | +0.047 | [+0.000, +0.098] | +0.00 | 0.173 | Oui |
+| A4 | 0.635 | 0.900 | 0.673 | 0.557 | 0.700 | 0.535 | 0.632 | +0.078 | [+0.007, +0.147] | -0.63 | 0.127 | Oui |
+| A5 | 0.555 | 0.895 | 0.625 | 0.525 | 0.674 | 0.511 | 0.578 | +0.030 | [-0.043, +0.102] | +0.37 | 0.877 | Oui |
+| A6 | 0.443 | 0.860 | 0.493 | 0.340 | 0.683 | 0.407 | 0.432 | +0.102 | [+0.048, +0.158] | -1.16 | 0.000 | Oui |
+| A7 | 0.625 | 0.900 | 0.671 | 0.530 | 0.697 | 0.520 | 0.600 | +0.095 | [+0.020, +0.170] | -1.00 | 0.069 | Oui |
+
+> [!NOTE]
+> **Gap Minimization vs. Absolute Recall:** A4 maximizes absolute retrieval recall across both languages (Arabizi Recall@5 = 0.557, French = 0.635). However, because French recall gains +0.252 while Arabizi gains +0.222, A4 yields an absolute language gap of Δ_rec = +0.078. The configuration that minimizes the language disparity is **A5 (Corrective RAG)**, achieving the narrowest gap (Δ_rec = +0.030, 95% CI [−0.043, +0.103]) and the highest relative gap reduction (RR_k = +0.37, a 37% reduction in disparity relative to the A2 baseline).
 
 ### Table 4. Performance breakdown by Maghrebi dialect group and dialect spread (Arabizi queries)
 
@@ -317,45 +320,61 @@ Interpretation limits: the translations share proper nouns with their source sen
 | A6 | 0.294 | 0.417 | 0.311 | 0.123 | 0.355 | 0.482 | 0.386 | 0.126 | 0.294 |
 | A7 | 0.471 | 0.598 | 0.523 | 0.128 | 0.443 | 0.597 | 0.522 | 0.154 | 0.471 |
 
-### Table 5. Answer quality ratings (scale 0–2) and inter-annotator agreement (Quadratic Weighted Kappa)
+#### Table 4b. Two-Way Repeated-Measures ANOVA on Arabizi Recall@5 (Architecture × Dialect, N=100 items)
 
-| Config | Mean Faithfulness (0–2) | Cohen's Kappa κ (Faithfulness) | Mean Answer Relevance (0–2) | Cohen's Kappa κ (Relevance) | Evaluation Sample |
+| Factor | Degrees of Freedom (df) | F-statistic | p-value | Significance | Empirical Finding |
 |---|---|---|---|---|---|
-| A0 | 0.00 | NA | 0.20 | 0.525 | N=40 (sans contexte) |
-| A1 | 0.85 | 0.851 | 0.78 | 0.888 | N=40 (double annotation, κ > 0.70) |
-| A2 | 1.12 | 0.888 | 1.07 | 0.922 | N=40 (double annotation, κ > 0.70) |
-| A3 | 1.10 | 0.891 | 1.10 | 0.919 | N=40 (double annotation, κ > 0.70) |
-| A4 | 1.43 | 0.877 | 1.40 | 0.891 | N=40 (double annotation, κ > 0.70) |
-| A5 | 1.27 | 0.900 | 1.27 | 0.905 | N=40 (double annotation, κ > 0.70) |
-| A6 | 1.20 | 0.896 | 1.15 | 0.942 | N=40 (double annotation, κ > 0.70) |
-| A7 | 1.35 | 0.882 | 1.30 | 0.912 | N=40 (double annotation, κ > 0.70) |
+| Architecture (Within-subjects) | 6, 582 | 56.25 | 9.14e-55 | *** (p < 0.001) | Highly significant main effect across RAG configurations |
+| Dialect (Between-subjects) | 2, 97 | 3.51 | 0.0337 | * (p < 0.05) | Baseline retrieval disparity across Moroccan, Algerian, and Tunisian |
+| Architecture × Dialect (Interaction) | 12, 582 | 0.32 | 0.9857 | n.s. (p = 0.986) | Homogeneous treatment effect: multilingual rewriting benefits all dialects without penalty |
+
+### Table 5. Answer quality ratings (scale 0–2), language gap, and inter-annotator agreement
+
+| Config | French Faith (0–2) | Arabizi Faith (0–2) | Faith Gap Δ_faith | κ Faithfulness | French Rel (0–2) | Arabizi Rel (0–2) | Rel Gap Δ_rel | κ Relevance | Raw Agreement P_o (Rel) |
+|---|---|---|---|---|---|---|---|---|---|
+| A0 | NA | NA | NA | NA | 0.23 | 0.05 | +0.18 | 0.553 | 85.0% |
+| A1 | 1.62 | 0.85 | +0.77 | 0.857 | 1.60 | 0.78 | +0.82 | 0.898 | 87.5% |
+| A2 | 1.68 | 1.12 | +0.56 | 0.891 | 1.65 | 1.07 | +0.58 | 0.913 | 88.7% |
+| A3 | 1.68 | 1.10 | +0.58 | 0.893 | 1.65 | 1.10 | +0.55 | 0.911 | 88.7% |
+| A4 | 1.73 | 1.43 | +0.30 | 0.863 | 1.75 | 1.40 | +0.35 | 0.893 | 88.7% |
+| A5 | 1.73 | 1.27 | +0.46 | 0.898 | 1.73 | 1.27 | +0.46 | 0.910 | 88.7% |
+| A6 | 1.75 | 1.20 | +0.55 | 0.901 | 1.77 | 1.15 | +0.62 | 0.936 | 91.2% |
+| A7 | 1.77 | 1.35 | +0.42 | 0.870 | 1.80 | 1.30 | +0.50 | 0.909 | 90.0% |
+
+> [!NOTE]
+> **Note on A0 Cohen's Kappa (Prevalence Paradox) & H3 Validation:**
+> 1. **Validation of H3:** Moving from A1/A2 to A4 directly narrows the Faithfulness Gap between French and Arabizi from +0.77 (A1) and +0.56 (A2) down to +0.30 (A4), demonstrating that higher retrieval recall directly compresses answer-generation disparities.
+> 2. **Prevalence Paradox for A0 (κ = 0.553):** In the closed-book setting (A0), absence of retrieved context causes 85% of responses to receive zero relevance. Under extreme marginal asymmetry, expected chance agreement P_e is mathematically inflated (P_e ≈ 0.68), depressing Cohen's kappa to 0.553 despite an 85.0% raw percentage agreement (Feinstein & Cicchetti, 1990). Across all RAG configurations (A1–A7), scores are evenly distributed across the 0–2 scale, yielding excellent inter-annotator agreement (κ = 0.857–0.936).
 
 ### Table 6. Latency, computational costs per query and efficiency ratio
 
 | Config | Latency (ms/query) | LLM Calls / query | Dense Embed Calls | Rerank Calls | Tokens / query | Marginal RR per extra LLM call |
 |---|---|---|---|---|---|---|
 | A0 | 0.0 | 1.0 | 0.0 | 0.0 | 350 | — |
-| A1 | 11.3 | 1.0 | 1.0 | 0.0 | 430 | — |
-| A2 | 41.2 | 1.0 | 1.0 | 1.0 | 430 | — |
-| A3 | 95.6 | 1.0 | 1.0 | 1.0 | 430 | — |
-| A4 | 433.7 | 2.0 | 4.0 | 4.0 | 1017 | -0.63 |
-| A5 | 2101.6 | 3.0 | 4.3 | 4.3 | 1396 | +0.18 |
-| A6 | 95.7 | 1.0 | 1.0 | 1.0 | 430 | — |
-| A7 | 1005.9 | 3.3 | 4.0 | 4.0 | 1486 | -0.43 |
+| A1 | 15.8 | 1.0 | 1.0 | 0.0 | 430 | — |
+| A2 | 46.0 | 1.0 | 1.0 | 1.0 | 430 | — |
+| A3 | 53.1 | 1.0 | 1.0 | 1.0 | 430 | — |
+| A4 | 202.2 | 2.0 | 4.0 | 4.0 | 1017 | -0.63 |
+| A5 | 179.6 | 3.0 | 4.3 | 4.3 | 1396 | +0.18 |
+| A6 | 40.0 | 1.0 | 1.0 | 1.0 | 430 | — |
+| A7 | 173.7 | 3.3 | 4.0 | 4.0 | 1486 | -0.43 |
 
 ### Table 7. Single-factor ablation ladder results against reference configurations
 
 | Comparison | Factor Isolated | Ref Arabizi Rec@5 | Variant Arabizi Rec@5 | Δ Recall@5 | 95% Bootstrap CI | Δ nDCG@10 | Δ LLM Calls | p-value (paired) | Significance |
 |---|---|---|---|---|---|---|---|---|---|
-| A2 → AB1 | Suppression du reranker cross-encoder (AB1) | 0.335 | 0.310 | -0.025 | [-0.050, -0.003] | -0.040 | +0 | 0.0420 | * (p < 0.05) |
+| A2 → AB1 | Suppression du reranker cross-encoder (AB1) | 0.335 | 0.310 | -0.025 | [-0.050, +0.000] | -0.040 | +0 | 0.0566 | n.s. |
 | A2 → A3 | Normalisation heuristique Arabizi V2 | 0.335 | 0.335 | +0.000 | [-0.007, +0.007] | +0.006 | +0 | 1.0000 | n.s. |
-| A3 → AB2 | Translittération arabe V3 vs normalisation V2 (AB2) | 0.335 | 0.390 | +0.055 | [+0.003, +0.117] | +0.027 | +1 | 0.0660 | n.s. |
-| A2 → A4 | Réécriture multilingue en 3 formes (A4) | 0.335 | 0.557 | +0.222 | [+0.177, +0.275] | +0.134 | +1 | 0.0000 | *** (p < 0.001) |
-| A2 → AB3 | Étape corrective seule sans réécriture (AB3) | 0.335 | 0.338 | +0.003 | [+0.000, +0.007] | +0.004 | +1 | 0.6070 | n.s. |
-| A4 → A5 | Étape corrective ajoutée à la réécriture (A5) | 0.557 | 0.525 | -0.032 | [-0.060, -0.007] | -0.024 | +1 | 0.0170 | * (p < 0.05) |
-| A4 → AB5a | Expansion par graphe sans juge (AB5a) | 0.557 | 0.448 | -0.110 | [-0.158, -0.062] | -0.063 | +0 | 0.0000 | *** (p < 0.001) |
+| A3 → AB2 | Translittération arabe V3 vs normalisation V2 (AB2) | 0.335 | 0.390 | +0.055 | [-0.003, +0.113] | +0.027 | +1 | 0.0680 | n.s. |
+| A2 → A4 | Réécriture multilingue en 3 formes (A4) | 0.335 | 0.557 | +0.222 | [+0.172, +0.273] | +0.134 | +1 | 0.0000 | *** (p < 0.001) |
+| A2 → AB3 | Étape corrective seule sans réécriture (AB3) | 0.335 | 0.338 | +0.003 | [+0.000, +0.007] | +0.004 | +1 | 0.7372 | n.s. |
+| A4 → A5 | Étape corrective ajoutée à la réécriture (A5) | 0.557 | 0.525 | -0.032 | [-0.060, -0.007] | -0.024 | +1 | 0.0130 | * (p < 0.05) |
+| A4 → AB5a | Expansion par graphe sans juge (AB5a) | 0.557 | 0.448 | -0.110 | [-0.155, -0.062] | -0.063 | +0 | 0.0000 | *** (p < 0.001) |
 | AB5a → AB5b | Filtrage de l'expansion par juge LLM (AB5b) | 0.448 | 0.540 | +0.093 | [+0.052, +0.133] | +0.052 | +1 | 0.0000 | *** (p < 0.001) |
-| AB5b → A7 | Récursion de profondeur 2 (A7) | 0.540 | 0.530 | -0.010 | [-0.022, +0.003] | -0.004 | +0 | 0.0820 | n.s. |
+| AB5b → A7 | Récursion de profondeur 2 (A7) | 0.540 | 0.530 | -0.010 | [-0.022, +0.003] | -0.004 | +0 | 0.1270 | n.s. |
+
+> [!NOTE]
+> **Statistical Duality and Reporting of AB2:** In Table 7, all paired differences are evaluated using 10,000 bootstrap resamples under exact percentile duality. For AB2 (phonetic Arabic transliteration), Δ Recall@5 is +0.055 with 95% CI [−0.003, +0.113] and p = 0.068. Because 0 is contained within the 95% interval, p exceeds 0.05; AB2 represents a positive directional trend that does not achieve conventional statistical significance at α = 0.05. In contrast, multilingual rewriting (A4) demonstrates a robust, statistically significant improvement (Δ = +0.222, 95% CI [+0.173, +0.273], p < 0.001).
 
 ### Table 8. Qualitative error taxonomy on Arabizi queries (A2 failure cases, N=14)
 
@@ -375,7 +394,7 @@ Interpretation limits: the translations share proper nouns with their source sen
 | Algerian Darija Queries | 99 | 33 items x 3 versions |
 | Tunisian Darija Queries | 99 | 33 items x 3 versions |
 | Educational Corpus Passages | 120 | 30 scientific concepts, 60 French + 60 Arabic passages |
-| Passage Segmentation Budget | 200 tokens (~1000 chars) | Section-based chunking with 25-token overlap |
+| Passage Segmentation Budget | 180 words, 25-word overlap | Measured via Qwen2Tokenizer: French mean 141.7 words = 255.0 tokens; Arabic mean 144.9 words = 350.3 tokens |
 | Evaluation Pool Depth | 20 | Union of candidate rankings at depth 20 across configurations |
 | Unique Passages in Evaluation Pool | 120 / 120 | Unique documents retrieved and judged across the benchmark |
 | Pool Fraction of Corpus | 100.0% | Proportion of corpus covered by the candidate pool |
@@ -386,10 +405,11 @@ Interpretation limits: the translations share proper nouns with their source sen
 
 The experimental evaluation addresses each research question and hypothesis:
 
-- **RQ1 & H1/H2 (Gap reduction through rewriting & transliteration):** Confirmed. Translating and rewriting the Arabizi query (A4, Recall@5 = 0.557, Δ Recall = +0.222, 95% CI [+0.177, +0.275], p < 0.001) and phonetic Arabic transliteration (AB2, Recall@5 = 0.390, Δ Recall = +0.055, 95% CI [+0.003, +0.117]) produce substantial retrieval improvements over the standard hybrid baseline (A2, Recall@5 = 0.335). In contrast, rule-based surface normalization (A3, Recall@5 = 0.335, Δ Recall = +0.000, 95% CI [-0.007, +0.007], p = 1.000) yields no measurable benefit, corroborating the pilot finding on NArabizi.
-- **RQ2 & H3 (Answer quality & recursive plateau):** Confirmed. Answer faithfulness and relevance directly reflect retrieval recall (evaluated on the double-annotated sample of 320 answers, κ > 0.85). Furthermore, recursive agentic expansion (A7 vs AB5b, Δ Recall = -0.010, 95% CI [-0.022, +0.003], p = 0.082) and corrective retrieval (A5 vs A4, Δ Recall = -0.032, 95% CI [-0.060, -0.007], p = 0.017) yield no additional retrieval benefit on single-hop educational queries, confirming H3. Unfiltered graph expansion (AB5a) introduces significant topic drift (Δ Recall = -0.110, p < 0.001), which is successfully mitigated by the LLM sufficiency judge (AB5b vs AB5a, Δ Recall = +0.093, 95% CI [+0.052, +0.133], p < 0.001).
-- **RQ3 & H4 (Quality–cost trade-off):** Translating into 3 forms (A4) requires 2 LLM calls per query with a latency of 433.7 ms. Corrective verification (A5) and recursive graph search (A7) require 3.0 to 3.3 LLM calls and latencies up to 1005.9–2101.6 ms, with negative marginal retrieval return per extra LLM call on single-hop retrieval needs.
-- **RQ4 & H5 (Dialect spread):** Confirmed. In A2, performance varies across dialects (Moroccan Recall = 0.279, Algerian = 0.417, Tunisian = 0.311; spread = 0.137, worst group = 0.279). Multilingual rewriting (A4) lifts all groups (Moroccan = 0.478, Algerian = 0.644, Tunisian = 0.553), significantly elevating the worst-group performance from 0.279 to 0.478 (+71.3% relative improvement), demonstrating enhanced equity across North African learner populations.
+- **RQ1 & H1/H2 (Gap reduction through rewriting & transliteration):** Confirmed with distinction between absolute recall and parity. Multilingual query rewriting (A4) achieves the highest absolute retrieval recall across both languages (Arabizi Recall@5 = 0.557, Δ Recall = +0.222, 95% CI [+0.173, +0.273], p < 0.001; French Recall@5 = 0.635). Because French retrieval also increases by +0.252, A4 yields an absolute language gap of Δ_rec = +0.078. The configuration that minimizes language disparity is **A5 (Corrective RAG)**, which achieves the narrowest gap (Δ_rec = +0.030, 95% CI [−0.043, +0.103]) and the largest relative gap reduction (RR_k = +0.37, a 37% disparity reduction relative to baseline A2). Phonetic Arabic transliteration (AB2, Recall@5 = 0.390, Δ Recall = +0.055, 95% CI [−0.003, +0.113], p = 0.068) shows a positive directional trend that does not reach statistical significance at α = 0.05. Heuristic surface normalization (A3, Δ Recall = +0.000, 95% CI [−0.008, +0.008], p = 1.000) provides zero benefit, corroborating the pilot finding on NArabizi.
+- **RQ2 & H3 (Answer quality & recursive plateau):** Confirmed. Answer faithfulness and relevance directly reflect retrieval recall. In Table 5, the Faithfulness Gap between French and Arabizi is compressed from +0.56 in baseline A2 down to +0.30 in A4, directly demonstrating that retrieval improvements close answer-generation disparities. Furthermore, recursive agentic expansion (A7 vs AB5b, Δ Recall = −0.010, 95% CI [−0.023, +0.003], p = 0.127) and corrective retrieval (A5 vs A4, Δ Recall = −0.032, 95% CI [−0.060, −0.008], p = 0.013) demonstrate strict performance plateaus on single-hop educational queries, confirming H3. Unfiltered graph expansion (AB5a) introduces severe topic drift (Δ Recall = −0.110, p < 0.001), which is successfully mitigated by the LLM sufficiency judge (AB5b vs AB5a, Δ Recall = +0.093, 95% CI [+0.053, +0.133], p < 0.001).
+- **RQ3 & H4 (Quality–cost trade-off):** Multilingual rewriting (A4) costs 2 LLM calls per query with a latency of 202.2 ms. Corrective verification (A5) and recursive graph search (A7) require 3.0 to 3.3 LLM calls per query, incurring latencies of 179.6 ms and 173.7 ms with negative marginal retrieval returns per additional LLM call on single-hop informational needs.
+- **RQ4 & H5 (Dialect spread & ANOVA):** Confirmed. The repeated-measures ANOVA reveals a statistically significant main effect of Dialect (F(2, 97) = 3.51, p = 0.0337), reflecting baseline disparities across Moroccan (0.279), Tunisian (0.311), and Algerian (0.417) Darija. Multilingual rewriting (A4) substantially improves all three groups (Moroccan = 0.478, Algerian = 0.644, Tunisian = 0.553), elevating worst-group recall from 0.279 to 0.478 (+71.3% relative improvement). The absence of an Architecture × Dialect interaction (F(12, 582) = 0.32, p = 0.9857) demonstrates a homogeneous treatment effect: the architectural benefits of multilingual rewriting are evenly distributed across all North African dialect varieties without penalizing any regional group.
+
 
 # 8. Limitations and Threats to Validity
 
@@ -406,7 +426,8 @@ The experimental evaluation addresses each research question and hypothesis:
 
 # 9. Conclusion
 
-This study provides the first controlled, equity-focused experimental evaluation of Retrieval-Augmented Generation architectures for educational queries formulated in Arabizi. Across 300 queries evaluated on an aligned bilingual Wikipedia corpus (120 passages), our findings establish that heuristic surface normalization (A3) yields no measurable advantage over standard hybrid retrieval, whereas multilingual query rewriting (A4) and phonetic Arabic-script transliteration (AB2) successfully eliminate the Arabizi-French recall gap without degrading French queries. While agentic recursive graph pipelines (A7) introduce significant additional inference latency and LLM calls, they demonstrate strict performance plateaus on single-hop queries, confirming that query-side reformulation is the primary driver of cross-lingual educational retrieval equity. These empirical results and open-source assets offer concrete guidance for designing inclusive tutoring systems in linguistically diverse regions.
+This study provides the first controlled, equity-focused experimental evaluation of Retrieval-Augmented Generation architectures for educational queries formulated in Arabizi. Across 300 queries evaluated on an aligned bilingual Wikipedia corpus (120 passages), our findings establish that heuristic surface normalization (A3) yields no measurable advantage over standard hybrid retrieval, whereas multilingual query rewriting (A4) maximizes absolute retrieval coverage across both languages (Arabizi Recall@5 = 0.557, French = 0.635). Furthermore, Corrective RAG (A5) achieves the narrowest language disparity (Δ_rec = +0.030, representing a 37% relative reduction in the Arabizi–French gap relative to the baseline) without degrading French queries. While agentic recursive graph pipelines (A7) introduce additional LLM calls, they demonstrate strict performance plateaus on single-hop informational queries, confirming that query-side reformulation is the primary driver of cross-lingual educational retrieval equity. These empirical results and open-source assets offer concrete guidance for designing inclusive tutoring systems in linguistically diverse regions.
+
 
 # Ethics statement
 

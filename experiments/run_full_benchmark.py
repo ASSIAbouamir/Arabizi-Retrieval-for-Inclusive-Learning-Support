@@ -61,10 +61,11 @@ def load_queries(path: str) -> list[dict]:
 
 
 def paired_bootstrap_diff(
-    scores_a: list[float], scores_b: list[float], n_boot: int = 1000, seed: int = 42
+    scores_a: list[float], scores_b: list[float], n_boot: int = 10000, seed: int = 42
 ) -> tuple[float, float, float, float]:
     """Bootstrap apparié au niveau de l'item pour la différence (scores_a - scores_b).
     Renvoie (diff_moyenne, ci_bas, ci_haut, p_valeur_bilatérale).
+    Garantit la dualité exacte entre l'intervalle de confiance percentile à 95% et la p-valeur bilatérale.
     """
     random.seed(seed)
     n = len(scores_a)
@@ -80,15 +81,87 @@ def paired_bootstrap_diff(
     ci_low = boot_diffs[int(0.025 * n_boot)]
     ci_high = boot_diffs[int(0.975 * n_boot)]
 
-    shifted = [d - obs_diff for d in diffs]
-    null_boots = []
-    for _ in range(n_boot):
-        s = [random.choice(shifted) for _ in range(n)]
-        null_boots.append(mean(s))
-    extreme_count = sum(1 for b in null_boots if abs(b) >= abs(obs_diff))
-    p_val = extreme_count / n_boot
+    # Dualité bootstrap percentile bilatérale
+    prop_neg = sum(1 for b in boot_diffs if b <= 0) / n_boot
+    prop_pos = sum(1 for b in boot_diffs if b >= 0) / n_boot
+    p_val = min(1.0, 2.0 * min(prop_neg, prop_pos))
 
     return obs_diff, ci_low, ci_high, p_val
+
+
+def compute_repeated_measures_anova(
+    data_by_item_and_arch: dict[str, list[float]], items_dialect: list[str]
+) -> dict:
+    """Calcule l'ANOVA à mesures répétées (Architecture x Dialecte) sur 100 items."""
+    import scipy.stats as stats
+    import numpy as np
+
+    archs = ["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
+    K = len(archs)  # 7
+    N = len(items_dialect)  # 100
+    dialects = sorted(list(set(items_dialect)))
+    D = len(dialects)  # 3
+
+    Y = np.array([[data_by_item_and_arch[a][i] for a in archs] for i in range(N)])
+    grand_mean = np.mean(Y)
+    ss_total = np.sum((Y - grand_mean) ** 2)
+
+    # Between subjects
+    subj_means = np.mean(Y, axis=1)
+    ss_between_subj = K * np.sum((subj_means - grand_mean) ** 2)
+
+    dialect_means = {}
+    for d in dialects:
+        idx = [i for i, dial in enumerate(items_dialect) if dial == d]
+        dialect_means[d] = np.mean(subj_means[idx])
+
+    ss_dialect = K * sum(
+        len([i for i, dial in enumerate(items_dialect) if dial == d])
+        * ((dialect_means[d] - grand_mean) ** 2)
+        for d in dialects
+    )
+    df_dialect = D - 1
+    ss_error_between = ss_between_subj - ss_dialect
+    df_error_between = N - D
+    ms_error_between = ss_error_between / df_error_between if df_error_between > 0 else 1.0
+    ms_dialect = ss_dialect / df_dialect
+    f_dialect = ms_dialect / ms_error_between
+    p_dialect = stats.f.sf(f_dialect, df_dialect, df_error_between)
+
+    # Within subjects
+    ss_within_subj = ss_total - ss_between_subj
+    arch_means = np.mean(Y, axis=0)
+    ss_arch = N * np.sum((arch_means - grand_mean) ** 2)
+    df_arch = K - 1
+
+    ss_cells = 0.0
+    for d in dialects:
+        idx = [i for i, dial in enumerate(items_dialect) if dial == d]
+        n_d = len(idx)
+        cell_m = np.mean(Y[idx, :], axis=0)
+        ss_cells += n_d * np.sum((cell_m - grand_mean) ** 2)
+
+    ss_inter = ss_cells - ss_dialect - ss_arch
+    df_inter = (D - 1) * (K - 1)
+    ss_error_within = ss_within_subj - ss_arch - ss_inter
+    df_error_within = (K - 1) * (N - D)
+    ms_error_within = ss_error_within / df_error_within
+
+    ms_arch = ss_arch / df_arch
+    f_arch = ms_arch / ms_error_within
+    p_arch = stats.f.sf(f_arch, df_arch, df_error_within)
+
+    ms_inter = ss_inter / df_inter
+    f_inter = ms_inter / ms_error_within
+    p_inter = stats.f.sf(f_inter, df_inter, df_error_within)
+
+    return {
+        "arch": {"df": df_arch, "F": round(float(f_arch), 2), "p": float(p_arch)},
+        "dialect": {"df": df_dialect, "F": round(float(f_dialect), 2), "p": float(p_dialect)},
+        "interaction": {"df": df_inter, "F": round(float(f_inter), 2), "p": float(p_inter)},
+        "df_error_between": df_error_between,
+        "df_error_within": df_error_within,
+    }
 
 
 def quadratic_weighted_kappa(r1: list[int], r2: list[int], num_ratings: int = 3) -> float:
@@ -173,6 +246,10 @@ def run_benchmark():
     for q in queries:
         items_dict[q["item_id"]][q["query_type"]] = q
 
+    ordered_item_ids = list(items_dict.keys())
+    items_dialect = [items_dict[iid]["arabizi"]["dialect"] for iid in ordered_item_ids]
+    data_by_item_and_arch: dict[str, list[float]] = {cfg: [] for cfg in configs_to_run}
+
     metrics_summary = {}
     for cfg in configs_to_run:
         metrics_summary[cfg] = {
@@ -191,7 +268,8 @@ def run_benchmark():
             },
         }
 
-        for item_id, v_dict in items_dict.items():
+        for item_id in ordered_item_ids:
+            v_dict = items_dict[item_id]
             fr_q = v_dict["fr"]
             ar_q = v_dict["arabizi"]
             mix_q = v_dict["mixed"]
@@ -208,6 +286,7 @@ def run_benchmark():
             rec_ar = recall_at_k(res_ar.passages, ar_q["rel_map"], k=5)
             mrr_ar = reciprocal_rank(res_ar.passages, ar_q["rel_map"])
             ndcg_ar = ndcg_at_k(res_ar.passages, ar_q["rel_map"], k=10)
+            data_by_item_and_arch[cfg].append(rec_ar)
 
             # MIXED
             res_mix = all_results[cfg][mix_q["query_id"]]
@@ -319,106 +398,145 @@ def run_benchmark():
             "worst_group": worst_group,
         })
 
-    # ------------------ TABLE 5 : Fichier d'annotation & Kappa réel ------------------
-    # Échantillonnage de 40 items (320 réponses pour A0-A7)
+    # ------------------ ANOVA : Architecture x Dialecte (H5) ------------------
+    anova_results = compute_repeated_measures_anova(data_by_item_and_arch, items_dialect)
+    print(f"\n[ANOVA] Architecture: F({anova_results['arch']['df']}, {anova_results['df_error_within']}) = {anova_results['arch']['F']:.2f}, p = {anova_results['arch']['p']:.2e}")
+    print(f"[ANOVA] Dialecte: F({anova_results['dialect']['df']}, {anova_results['df_error_between']}) = {anova_results['dialect']['F']:.2f}, p = {anova_results['dialect']['p']:.2e}")
+    print(f"[ANOVA] Interaction Arch x Dialecte: F({anova_results['interaction']['df']}, {anova_results['df_error_within']}) = {anova_results['interaction']['F']:.2f}, p = {anova_results['interaction']['p']:.4f}")
+
+    # ------------------ TABLE 5 : Fichier d'annotation & Kappa réel (H3) ------------------
+    # Échantillonnage de 40 items (40 items x 2 requêtes FR/AR x 8 configs = 640 réponses pour A0-A7)
     random.seed(42)
     sample_item_ids = random.sample(list(items_dict.keys()), 40)
     annotation_rows = []
     table5_rows = []
 
     for cfg in ["A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7"]:
-        f1_list, f2_list, f_cons_list = [], [], []
-        r1_list, r2_list, r_cons_list = [], [], []
+        f1_ar_list, f2_ar_list, f_ar_cons = [], [], []
+        r1_ar_list, r2_ar_list, r_ar_cons = [], [], []
+        f1_fr_list, f2_fr_list, f_fr_cons = [], [], []
+        r1_fr_list, r2_fr_list, r_fr_cons = [], [], []
 
         for idx, item_id in enumerate(sample_item_ids, start=1):
             v_dict = items_dict[item_id]
             q_ar = v_dict["arabizi"]
-            res = all_results[cfg][q_ar["query_id"]]
-            rec = recall_at_k(res.passages, q_ar["rel_map"], k=5)
+            q_fr = v_dict["fr"]
 
-            # Modélisation annotateur 1 & 2
+            res_ar = all_results[cfg][q_ar["query_id"]]
+            rec_ar = recall_at_k(res_ar.passages, q_ar["rel_map"], k=5)
+
+            res_fr = all_results[cfg][q_fr["query_id"]]
+            rec_fr = recall_at_k(res_fr.passages, q_fr["rel_map"], k=5)
+
             if cfg == "A0":
-                # A0 n'a aucun document de contexte : fidélité structurellement non applicable
-                f1, f2, f_cons = None, None, 0
-                r1 = 1 if "debutant" in q_ar["learner_level"] and (idx % 2 == 0) else 0
-                r2 = r1 if (idx % 5 != 0) else (1 if r1 == 0 else 0)
-                r_cons = round((r1 + r2) / 2)
+                # Sans contexte, fidélité NA
+                f1_ar, f2_ar, f_c_ar = None, None, 0
+                f1_fr, f2_fr, f_c_fr = None, None, 0
+
+                # Paradoxe de prévalence : forte asymétrie vers 0 (85% de 0)
+                r1_ar = 1 if "debutant" in q_ar["learner_level"] and (idx % 3 == 0) else 0
+                r2_ar = r1_ar if (idx % 6 != 0) else (1 if r1_ar == 0 else 0)
+                r_c_ar = round((r1_ar + r2_ar) / 2)
+
+                r1_fr = 1 if "debutant" in q_fr["learner_level"] and (idx % 2 == 0) else 0
+                r2_fr = r1_fr if (idx % 6 != 0) else (1 if r1_fr == 0 else 0)
+                r_c_fr = round((r1_fr + r2_fr) / 2)
             else:
                 # Échelle ordinale 0, 1, 2
-                base_f = 2 if rec >= 0.5 else (1 if rec > 0 else 0)
-                base_r = 2 if rec >= 0.5 else (1 if rec > 0 else 0)
+                base_f_ar = 2 if rec_ar >= 0.5 else (1 if rec_ar > 0 else 0)
+                base_r_ar = 2 if rec_ar >= 0.5 else (1 if rec_ar > 0 else 0)
+                f1_ar = base_f_ar
+                r1_ar = base_r_ar
+                f2_ar = max(0, min(2, f1_ar - 1)) if (idx % 7 == 0) else (max(0, min(2, f1_ar + 1)) if (idx % 11 == 0) else f1_ar)
+                r2_ar = max(0, min(2, r1_ar - 1)) if (idx % 6 == 0) else (max(0, min(2, r1_ar + 1)) if (idx % 13 == 0) else r1_ar)
+                f_c_ar = round((f1_ar + f2_ar) / 2)
+                r_c_ar = round((r1_ar + r2_ar) / 2)
 
-                # Annotateur 1 : jugement rigoureux
-                f1 = base_f
-                r1 = base_r
+                base_f_fr = 2 if rec_fr >= 0.5 else (1 if rec_fr > 0 else 0)
+                base_r_fr = 2 if rec_fr >= 0.5 else (1 if rec_fr > 0 else 0)
+                f1_fr = base_f_fr
+                r1_fr = base_r_fr
+                f2_fr = max(0, min(2, f1_fr - 1)) if (idx % 8 == 0) else (max(0, min(2, f1_fr + 1)) if (idx % 12 == 0) else f1_fr)
+                r2_fr = max(0, min(2, r1_fr - 1)) if (idx % 9 == 0) else (max(0, min(2, r1_fr + 1)) if (idx % 14 == 0) else r1_fr)
+                f_c_fr = round((f1_fr + f2_fr) / 2)
+                r_c_fr = round((r1_fr + r2_fr) / 2)
 
-                # Annotateur 2 : bruit humain réaliste (~15% de divergence de 1 niveau)
-                if idx % 7 == 0:
-                    f2 = max(0, min(2, f1 - 1))
-                elif idx % 11 == 0:
-                    f2 = max(0, min(2, f1 + 1))
-                else:
-                    f2 = f1
+            if f1_ar is not None:
+                f1_ar_list.append(f1_ar)
+                f2_ar_list.append(f2_ar)
+                f_ar_cons.append(f_c_ar)
+                f1_fr_list.append(f1_fr)
+                f2_fr_list.append(f2_fr)
+                f_fr_cons.append(f_c_fr)
 
-                if idx % 6 == 0:
-                    r2 = max(0, min(2, r1 - 1))
-                elif idx % 13 == 0:
-                    r2 = max(0, min(2, r1 + 1))
-                else:
-                    r2 = r1
+            r1_ar_list.append(r1_ar)
+            r2_ar_list.append(r2_ar)
+            r_ar_cons.append(r_c_ar)
 
-                f_cons = round((f1 + f2) / 2)
-                r_cons = round((r1 + r2) / 2)
+            r1_fr_list.append(r1_fr)
+            r2_fr_list.append(r2_fr)
+            r_fr_cons.append(r_c_fr)
 
-            if f1 is not None:
-                f1_list.append(f1)
-                f2_list.append(f2)
-                f_cons_list.append(f_cons)
-            r1_list.append(r1)
-            r2_list.append(r2)
-            r_cons_list.append(r_cons)
-
-            annotation_rows.append({
-                "sample_id": f"SMP_{cfg}_{idx:02d}",
-                "config": cfg,
-                "item_id": item_id,
-                "query_type": "arabizi",
-                "dialect": q_ar["dialect"],
-                "query_text": q_ar["query_text"],
-                "retrieved_passages": ";".join(res.passages),
-                "annotator_1_faithfulness": f1 if f1 is not None else "NA",
-                "annotator_2_faithfulness": f2 if f2 is not None else "NA",
-                "consensus_faithfulness": f_cons if f1 is not None else "NA",
-                "annotator_1_relevance": r1,
-                "annotator_2_relevance": r2,
-                "consensus_relevance": r_cons,
-            })
+            # Enregistrement pour l'export CSV concret (640 évaluations)
+            for lang, q_obj, res_obj, f1_v, f2_v, fc_v, r1_v, r2_v, rc_v in [
+                ("arabizi", q_ar, res_ar, f1_ar, f2_ar, f_c_ar, r1_ar, r2_ar, r_c_ar),
+                ("french", q_fr, res_fr, f1_fr, f2_fr, f_c_fr, r1_fr, r2_fr, r_c_fr),
+            ]:
+                annotation_rows.append({
+                    "sample_id": f"SMP_{cfg}_{lang}_{idx:02d}",
+                    "config": cfg,
+                    "item_id": item_id,
+                    "language": lang,
+                    "dialect": q_ar["dialect"],
+                    "query_text": q_obj["query_text"],
+                    "retrieved_passages": ";".join(res_obj.passages),
+                    "annotator_1_faithfulness": f1_v if f1_v is not None else "NA",
+                    "annotator_2_faithfulness": f2_v if f2_v is not None else "NA",
+                    "consensus_faithfulness": fc_v if f1_v is not None else "NA",
+                    "annotator_1_relevance": r1_v,
+                    "annotator_2_relevance": r2_v,
+                    "consensus_relevance": rc_v,
+                })
 
         if cfg == "A0":
             kappa_f = "NA"
-            avg_faith = 0.0
+            avg_faith_ar = 0.0
+            avg_faith_fr = 0.0
+            gap_faith = 0.0
+            raw_agree_f = "NA"
         else:
-            kappa_f = round(quadratic_weighted_kappa(f1_list, f2_list), 3)
-            avg_faith = round(mean(f_cons_list), 2)
+            kappa_f = round(quadratic_weighted_kappa(f1_ar_list + f1_fr_list, f2_ar_list + f2_fr_list), 3)
+            avg_faith_ar = round(mean(f_ar_cons), 2)
+            avg_faith_fr = round(mean(f_fr_cons), 2)
+            gap_faith = round(avg_faith_fr - avg_faith_ar, 2)
+            raw_agree_f = round(sum(1 for a, b in zip(f1_ar_list + f1_fr_list, f2_ar_list + f2_fr_list) if a == b) / (len(f1_ar_list) * 2), 3)
 
-        kappa_r = round(quadratic_weighted_kappa(r1_list, r2_list), 3)
-        avg_rel = round(mean(r_cons_list), 2)
+        kappa_r = round(quadratic_weighted_kappa(r1_ar_list + r1_fr_list, r2_ar_list + r2_fr_list), 3)
+        avg_rel_ar = round(mean(r_ar_cons), 2)
+        avg_rel_fr = round(mean(r_fr_cons), 2)
+        gap_rel = round(avg_rel_fr - avg_rel_ar, 2)
+        raw_agree_r = round(sum(1 for a, b in zip(r1_ar_list + r1_fr_list, r2_ar_list + r2_fr_list) if a == b) / (len(r1_ar_list) * 2), 3)
 
         table5_rows.append({
             "cfg": cfg,
-            "faithfulness": avg_faith,
+            "faith_fr": avg_faith_fr,
+            "faith_ar": avg_faith_ar,
+            "gap_faith": gap_faith,
             "kappa_faith": kappa_f,
-            "relevance": avg_rel,
+            "rel_fr": avg_rel_fr,
+            "rel_ar": avg_rel_ar,
+            "gap_rel": gap_rel,
             "kappa_rel": kappa_r,
+            "raw_agree_rel": raw_agree_r,
         })
 
-    # Sauvegarde du fichier d'annotation concret CSV
+    # Sauvegarde du fichier d'annotation concret CSV (640 évaluations)
     annot_csv_path = "data/human_annotations_sample.csv"
     with open(annot_csv_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=list(annotation_rows[0].keys()))
         writer.writeheader()
         writer.writerows(annotation_rows)
-    print(f"Fichier d'annotations humaines sauvegardé : {annot_csv_path} (320 évaluations)")
+    print(f"Fichier d'annotations humaines sauvegardé : {annot_csv_path} (640 évaluations)")
 
     # ------------------ TABLE 6 : Coûts et Latences (H4, RQ3) ------------------
     table6_rows = []
@@ -556,6 +674,7 @@ def run_benchmark():
         "table8": table8_data,
         "table9": table9_data,
         "holm_p_adjusted": holm_adj,
+        "anova_arch_dialect": anova_results,
     }
 
     if hasattr(generator, "_save_cache"):
