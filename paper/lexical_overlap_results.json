@@ -1,0 +1,95 @@
+{
+  "overall_by_version": {
+    "arabizi": {
+      "count": 100,
+      "mean_containment": 0.1215,
+      "mean_containment_pct": "12.2%",
+      "mean_jaccard": 0.0114
+    },
+    "mixed": {
+      "count": 100,
+      "mean_containment": 0.2228,
+      "mean_containment_pct": "22.3%",
+      "mean_jaccard": 0.0221
+    },
+    "fr": {
+      "count": 100,
+      "mean_containment": 0.2836,
+      "mean_containment_pct": "28.4%",
+      "mean_jaccard": 0.0415
+    }
+  },
+  "by_dialect": {
+    "darija_maroc": {
+      "count": 102,
+      "mean_containment": 0.2057,
+      "mean_containment_pct": "20.6%"
+    },
+    "darija_algerie": {
+      "count": 99,
+      "mean_containment": 0.2286,
+      "mean_containment_pct": "22.9%"
+    },
+    "darija_tunisie": {
+      "count": 99,
+      "mean_containment": 0.1937,
+      "mean_containment_pct": "19.4%"
+    }
+  },
+  "by_dialect_and_version": {
+    "darija_maroc::arabizi": {
+      "count": 34,
+      "mean_containment": 0.0931,
+      "mean_containment_pct": "9.3%",
+      "mean_jaccard": 0.0079
+    },
+    "darija_maroc::mixed": {
+      "count": 34,
+      "mean_containment": 0.2404,
+      "mean_containment_pct": "24.0%",
+      "mean_jaccard": 0.025
+    },
+    "darija_maroc::fr": {
+      "count": 34,
+      "mean_containment": 0.2836,
+      "mean_containment_pct": "28.4%",
+      "mean_jaccard": 0.041
+    },
+    "darija_algerie::arabizi": {
+      "count": 33,
+      "mean_containment": 0.1704,
+      "mean_containment_pct": "17.0%",
+      "mean_jaccard": 0.0165
+    },
+    "darija_algerie::mixed": {
+      "count": 33,
+      "mean_containment": 0.2284,
+      "mean_containment_pct": "22.8%",
+      "mean_jaccard": 0.0224
+    },
+    "darija_algerie::fr": {
+      "count": 33,
+      "mean_containment": 0.2869,
+      "mean_containment_pct": "28.7%",
+      "mean_jaccard": 0.0424
+    },
+    "darija_tunisie::arabizi": {
+      "count": 33,
+      "mean_containment": 0.1019,
+      "mean_containment_pct": "10.2%",
+      "mean_jaccard": 0.01
+    },
+    "darija_tunisie::mixed": {
+      "count": 33,
+      "mean_containment": 0.1991,
+      "mean_containment_pct": "19.9%",
+      "mean_jaccard": 0.019
+    },
+    "darija_tunisie::fr": {
+      "count": 33,
+      "mean_containment": 0.2802,
+      "mean_containment_pct": "28.0%",
+      "mean_jaccard": 0.0413
+    }
+  }
+}
