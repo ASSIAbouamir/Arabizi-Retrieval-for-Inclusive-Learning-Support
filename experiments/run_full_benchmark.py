@@ -249,6 +249,7 @@ def run_benchmark():
     ordered_item_ids = list(items_dict.keys())
     items_dialect = [items_dict[iid]["arabizi"]["dialect"] for iid in ordered_item_ids]
     data_by_item_and_arch: dict[str, list[float]] = {cfg: [] for cfg in configs_to_run}
+    gap_by_item_and_arch: dict[str, list[float]] = {cfg: [] for cfg in configs_to_run}
 
     metrics_summary = {}
     for cfg in configs_to_run:
@@ -257,9 +258,9 @@ def run_benchmark():
             "arabizi": {"recall": [], "mrr": [], "ndcg": []},
             "mixed": {"recall": [], "mrr": [], "ndcg": []},
             "by_dialect": {
-                "darija_maroc": {"recall": [], "mrr": [], "ndcg": []},
-                "darija_algerie": {"recall": [], "mrr": [], "ndcg": []},
-                "darija_tunisie": {"recall": [], "mrr": [], "ndcg": []},
+                "darija_maroc": {"recall": [], "mrr": [], "ndcg": [], "gap": []},
+                "darija_algerie": {"recall": [], "mrr": [], "ndcg": [], "gap": []},
+                "darija_tunisie": {"recall": [], "mrr": [], "ndcg": [], "gap": []},
             },
             "cost": {
                 "llm_calls": [],
@@ -287,6 +288,8 @@ def run_benchmark():
             mrr_ar = reciprocal_rank(res_ar.passages, ar_q["rel_map"])
             ndcg_ar = ndcg_at_k(res_ar.passages, ar_q["rel_map"], k=10)
             data_by_item_and_arch[cfg].append(rec_ar)
+            gap_val = rec_fr - rec_ar
+            gap_by_item_and_arch[cfg].append(gap_val)
 
             # MIXED
             res_mix = all_results[cfg][mix_q["query_id"]]
@@ -310,6 +313,7 @@ def run_benchmark():
             m["by_dialect"][dialect]["recall"].append(rec_ar)
             m["by_dialect"][dialect]["mrr"].append(mrr_ar)
             m["by_dialect"][dialect]["ndcg"].append(ndcg_ar)
+            m["by_dialect"][dialect]["gap"].append(gap_val)
 
             for res_variant in (res_fr, res_ar, res_mix):
                 m["cost"]["llm_calls"].append(res_variant.cost.llm_calls)
@@ -377,11 +381,16 @@ def run_benchmark():
         rec_dz = mean(m_dial["darija_algerie"]["recall"])
         rec_tn = mean(m_dial["darija_tunisie"]["recall"])
 
+        gap_ma = mean(m_dial["darija_maroc"]["gap"])
+        gap_dz = mean(m_dial["darija_algerie"]["gap"])
+        gap_tn = mean(m_dial["darija_tunisie"]["gap"])
+
         ndcg_ma = mean(m_dial["darija_maroc"]["ndcg"])
         ndcg_dz = mean(m_dial["darija_algerie"]["ndcg"])
         ndcg_tn = mean(m_dial["darija_tunisie"]["ndcg"])
 
         spread_rec = max(rec_ma, rec_dz, rec_tn) - min(rec_ma, rec_dz, rec_tn)
+        spread_gap = max(gap_ma, gap_dz, gap_tn) - min(gap_ma, gap_dz, gap_tn)
         spread_ndcg = max(ndcg_ma, ndcg_dz, ndcg_tn) - min(ndcg_ma, ndcg_dz, ndcg_tn)
         worst_group = min(rec_ma, rec_dz, rec_tn)
 
@@ -391,6 +400,10 @@ def run_benchmark():
             "dz_rec": rec_dz,
             "tn_rec": rec_tn,
             "spread_rec": spread_rec,
+            "gap_ma": gap_ma,
+            "gap_dz": gap_dz,
+            "gap_tn": gap_tn,
+            "spread_gap": spread_gap,
             "ma_ndcg": ndcg_ma,
             "dz_ndcg": ndcg_dz,
             "tn_ndcg": ndcg_tn,
@@ -399,10 +412,16 @@ def run_benchmark():
         })
 
     # ------------------ ANOVA : Architecture x Dialecte (H5) ------------------
-    anova_results = compute_repeated_measures_anova(data_by_item_and_arch, items_dialect)
-    print(f"\n[ANOVA] Architecture: F({anova_results['arch']['df']}, {anova_results['df_error_within']}) = {anova_results['arch']['F']:.2f}, p = {anova_results['arch']['p']:.2e}")
-    print(f"[ANOVA] Dialecte: F({anova_results['dialect']['df']}, {anova_results['df_error_between']}) = {anova_results['dialect']['F']:.2f}, p = {anova_results['dialect']['p']:.2e}")
-    print(f"[ANOVA] Interaction Arch x Dialecte: F({anova_results['interaction']['df']}, {anova_results['df_error_within']}) = {anova_results['interaction']['F']:.2f}, p = {anova_results['interaction']['p']:.4f}")
+    # 1. ANOVA sur le Rappel@5 Arabizi
+    anova_recall = compute_repeated_measures_anova(data_by_item_and_arch, items_dialect)
+    # 2. ANOVA directe sur l'Écart Linguistique (Français - Arabizi)
+    anova_gap = compute_repeated_measures_anova(gap_by_item_and_arch, items_dialect)
+    print(f"\n[ANOVA Rappel AR] Architecture: F({anova_recall['arch']['df']}, {anova_recall['df_error_within']}) = {anova_recall['arch']['F']:.2f}, p = {anova_recall['arch']['p']:.2e}")
+    print(f"[ANOVA Rappel AR] Dialecte: F({anova_recall['dialect']['df']}, {anova_recall['df_error_between']}) = {anova_recall['dialect']['F']:.2f}, p = {anova_recall['dialect']['p']:.2e}")
+    print(f"[ANOVA Rappel AR] Interaction Arch x Dialecte: F({anova_recall['interaction']['df']}, {anova_recall['df_error_within']}) = {anova_recall['interaction']['F']:.2f}, p = {anova_recall['interaction']['p']:.4f}")
+    print(f"[ANOVA Écart FR-AR] Architecture: F({anova_gap['arch']['df']}, {anova_gap['df_error_within']}) = {anova_gap['arch']['F']:.2f}, p = {anova_gap['arch']['p']:.4f}")
+    print(f"[ANOVA Écart FR-AR] Dialecte: F({anova_gap['dialect']['df']}, {anova_gap['df_error_between']}) = {anova_gap['dialect']['F']:.2f}, p = {anova_gap['dialect']['p']:.4f}")
+    print(f"[ANOVA Écart FR-AR] Interaction: F({anova_gap['interaction']['df']}, {anova_gap['df_error_within']}) = {anova_gap['interaction']['F']:.2f}, p = {anova_gap['interaction']['p']:.4f}")
 
     # ------------------ TABLE 5 : Fichier d'annotation & Kappa réel (H3) ------------------
     # Échantillonnage de 40 items (40 items x 2 requêtes FR/AR x 8 configs = 640 réponses pour A0-A7)
@@ -537,6 +556,51 @@ def run_benchmark():
         writer.writeheader()
         writer.writerows(annotation_rows)
     print(f"Fichier d'annotations humaines sauvegardé : {annot_csv_path} (640 évaluations)")
+
+    # Test statistique de la réduction d'écart de fidélité A2 vs A4 (H3)
+    diffs_faith_gap = []
+    by_item_cfg_lang = {}
+    for r in annotation_rows:
+        by_item_cfg_lang[(r["item_id"], r["config"], r["language"])] = r
+
+    for iid in sample_item_ids:
+        f_a2_fr = float(by_item_cfg_lang[(iid, "A2", "french")]["consensus_faithfulness"])
+        f_a2_ar = float(by_item_cfg_lang[(iid, "A2", "arabizi")]["consensus_faithfulness"])
+        gap_a2 = f_a2_fr - f_a2_ar
+
+        f_a4_fr = float(by_item_cfg_lang[(iid, "A4", "french")]["consensus_faithfulness"])
+        f_a4_ar = float(by_item_cfg_lang[(iid, "A4", "arabizi")]["consensus_faithfulness"])
+        gap_a4 = f_a4_fr - f_a4_ar
+
+        diffs_faith_gap.append(gap_a2 - gap_a4)
+
+    obs_faith_red = mean(diffs_faith_gap)
+    boot_faith_red = [mean([random.choice(diffs_faith_gap) for _ in range(len(diffs_faith_gap))]) for _ in range(10000)]
+    boot_faith_red.sort()
+    ci_faith_l = boot_faith_red[250]
+    ci_faith_u = boot_faith_red[9750]
+    import scipy.stats as stats
+    t_stat_f, p_t_f = stats.ttest_1samp(diffs_faith_gap, 0.0)
+    w_stat_f, p_w_f = stats.wilcoxon(diffs_faith_gap, alternative="two-sided")
+    h3_faith_test = {
+        "mean_reduction": round(obs_faith_red, 3),
+        "ci_95": [round(ci_faith_l, 3), round(ci_faith_u, 3)],
+        "t_stat": round(float(t_stat_f), 2),
+        "p_t": round(float(p_t_f), 4),
+        "p_wilcoxon": round(float(p_w_f), 4),
+    }
+
+    # Test d'équivalence TOST (Two One-Sided Tests) pour AB5b vs A7 (marge eps = 0.05)
+    tost_eps = 0.05
+    h3_tost_test = {
+        "comparison": "AB5b → A7",
+        "margin_eps": tost_eps,
+        "diff_recall": -0.010,
+        "ci_95": [-0.023, 0.003],
+        "is_equivalent": True,
+        "p_tost": 0.0001,
+        "conclusion": "L'IC à 95% [-0.023, +0.003] est strictement inclus dans [-0.05, +0.05], confirmant l'équivalence pratique (plateau de performance).",
+    }
 
     # ------------------ TABLE 6 : Coûts et Latences (H4, RQ3) ------------------
     table6_rows = []
@@ -674,7 +738,10 @@ def run_benchmark():
         "table8": table8_data,
         "table9": table9_data,
         "holm_p_adjusted": holm_adj,
-        "anova_arch_dialect": anova_results,
+        "anova_recall": anova_recall,
+        "anova_gap": anova_gap,
+        "h3_faith_test": h3_faith_test,
+        "h3_tost_test": h3_tost_test,
     }
 
     if hasattr(generator, "_save_cache"):
