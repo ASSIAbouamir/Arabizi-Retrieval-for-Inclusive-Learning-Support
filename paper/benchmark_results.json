@@ -20,128 +20,128 @@
     },
     {
       "cfg": "A1",
-      "fr_rec": 0.4575,
-      "fr_mrr": 0.985,
-      "fr_ndcg": 0.5635820518280934,
-      "ar_rec": 0.3975,
-      "ar_mrr": 0.7323333333333333,
-      "ar_ndcg": 0.45431521715821915,
-      "mix_rec": 0.51,
-      "gap_rec": 0.06,
+      "fr_rec": 0.3725,
+      "fr_mrr": 0.7583333333333333,
+      "fr_ndcg": 0.4287110185399139,
+      "ar_rec": 0.2575,
+      "ar_mrr": 0.509,
+      "ar_ndcg": 0.29551281497587517,
+      "mix_rec": 0.3475,
+      "gap_rec": 0.11499999999999999,
       "gap_ci": [
-        0.015,
-        0.11
+        0.0675,
+        0.1625
       ],
-      "rr_k": 8.999999999999993,
-      "p_val": 0.022,
+      "rr_k": -1.4210526315789478,
+      "p_val": 0.0,
       "non_deg": true
     },
     {
       "cfg": "A2",
-      "fr_rec": 0.3775,
-      "fr_mrr": 0.9201666666666667,
-      "fr_ndcg": 0.4825601289222724,
-      "ar_rec": 0.385,
-      "ar_mrr": 0.797,
-      "ar_ndcg": 0.441422017280589,
-      "mix_rec": 0.4125,
-      "gap_rec": -0.007500000000000007,
+      "fr_rec": 0.3825,
+      "fr_mrr": 0.8675,
+      "fr_ndcg": 0.4450701988646509,
+      "ar_rec": 0.335,
+      "ar_mrr": 0.6933333333333334,
+      "ar_ndcg": 0.40090720520334516,
+      "mix_rec": 0.41,
+      "gap_rec": 0.04749999999999999,
       "gap_ci": [
-        -0.0475,
-        0.035
+        0.0025,
+        0.1
       ],
-      "rr_k": -0.0,
-      "p_val": 0.745,
+      "rr_k": 0.0,
+      "p_val": 0.051,
       "non_deg": true
     },
     {
       "cfg": "A3",
-      "fr_rec": 0.3775,
-      "fr_mrr": 0.9201666666666667,
-      "fr_ndcg": 0.4814887549385416,
-      "ar_rec": 0.3825,
-      "ar_mrr": 0.792,
-      "ar_ndcg": 0.43924501616057016,
-      "mix_rec": 0.415,
-      "gap_rec": -0.0050000000000000044,
+      "fr_rec": 0.3825,
+      "fr_mrr": 0.8675,
+      "fr_ndcg": 0.44491969141014687,
+      "ar_rec": 0.335,
+      "ar_mrr": 0.707,
+      "ar_ndcg": 0.4067150564666485,
+      "mix_rec": 0.41,
+      "gap_rec": 0.04749999999999999,
       "gap_ci": [
-        -0.045,
-        0.0375
+        0.0025,
+        0.1
       ],
-      "rr_k": 0.3333333333333333,
-      "p_val": 0.821,
+      "rr_k": 0.0,
+      "p_val": 0.053,
       "non_deg": true
     },
     {
       "cfg": "A4",
-      "fr_rec": 0.4025,
-      "fr_mrr": 0.774,
-      "fr_ndcg": 0.44989035505996505,
-      "ar_rec": 0.4575,
-      "ar_mrr": 0.7436666666666667,
-      "ar_ndcg": 0.49519007359771344,
-      "mix_rec": 0.5075,
-      "gap_rec": -0.05499999999999999,
+      "fr_rec": 0.635,
+      "fr_mrr": 0.9,
+      "fr_ndcg": 0.6730249179769984,
+      "ar_rec": 0.5575,
+      "ar_mrr": 0.6995,
+      "ar_ndcg": 0.5351175183744509,
+      "mix_rec": 0.6325,
+      "gap_rec": 0.07750000000000001,
       "gap_ci": [
-        -0.115,
-        0.005
+        0.0075,
+        0.15
       ],
-      "rr_k": -6.333333333333326,
-      "p_val": 0.095,
+      "rr_k": -0.6315789473684218,
+      "p_val": 0.031,
       "non_deg": true
     },
     {
       "cfg": "A5",
-      "fr_rec": 0.41,
-      "fr_mrr": 0.799,
-      "fr_ndcg": 0.46344377755151733,
-      "ar_rec": 0.4675,
-      "ar_mrr": 0.7486666666666667,
-      "ar_ndcg": 0.5006549806798272,
-      "mix_rec": 0.5175,
-      "gap_rec": -0.05750000000000005,
+      "fr_rec": 0.555,
+      "fr_mrr": 0.895,
+      "fr_ndcg": 0.6248946529239998,
+      "ar_rec": 0.525,
+      "ar_mrr": 0.6736666666666666,
+      "ar_ndcg": 0.5107005843329008,
+      "mix_rec": 0.5775,
+      "gap_rec": 0.030000000000000027,
       "gap_ci": [
-        -0.1125,
-        0.0
+        -0.0425,
+        0.1075
       ],
-      "rr_k": -6.666666666666667,
-      "p_val": 0.066,
+      "rr_k": 0.3684210526315782,
+      "p_val": 0.399,
       "non_deg": true
     },
     {
       "cfg": "A6",
-      "fr_rec": 0.4325,
-      "fr_mrr": 0.9141666666666667,
-      "fr_ndcg": 0.5156505863239627,
-      "ar_rec": 0.395,
-      "ar_mrr": 0.794,
-      "ar_ndcg": 0.4499696793563857,
-      "mix_rec": 0.455,
-      "gap_rec": 0.03749999999999998,
+      "fr_rec": 0.4425,
+      "fr_mrr": 0.86,
+      "fr_ndcg": 0.49305295079129174,
+      "ar_rec": 0.34,
+      "ar_mrr": 0.6833333333333333,
+      "ar_ndcg": 0.4072751570124831,
+      "mix_rec": 0.4325,
+      "gap_rec": 0.10249999999999998,
       "gap_ci": [
-        -0.005,
-        0.085
+        0.05,
+        0.16
       ],
-      "rr_k": 5.999999999999993,
-      "p_val": 0.129,
+      "rr_k": -1.1578947368421055,
+      "p_val": 0.0,
       "non_deg": true
     },
     {
       "cfg": "A7",
-      "fr_rec": 0.4025,
-      "fr_mrr": 0.774,
-      "fr_ndcg": 0.44989035505996505,
-      "ar_rec": 0.4575,
-      "ar_mrr": 0.7436666666666667,
-      "ar_ndcg": 0.49519007359771344,
-      "mix_rec": 0.5075,
-      "gap_rec": -0.05499999999999999,
+      "fr_rec": 0.625,
+      "fr_mrr": 0.9,
+      "fr_ndcg": 0.6708685270703237,
+      "ar_rec": 0.53,
+      "ar_mrr": 0.6965,
+      "ar_ndcg": 0.5198126522614391,
+      "mix_rec": 0.6,
+      "gap_rec": 0.09499999999999997,
       "gap_ci": [
-        -0.115,
-        0.005
+        0.0175,
+        0.175
       ],
-      "rr_k": -6.333333333333326,
-      "p_val": 0.095,
+      "rr_k": -1.0,
+      "p_val": 0.016,
       "non_deg": true
     }
   ],
@@ -160,87 +160,87 @@
     },
     {
       "cfg": "A1",
-      "ma_rec": 0.3235294117647059,
-      "dz_rec": 0.5303030303030303,
-      "tn_rec": 0.3409090909090909,
-      "spread_rec": 0.20677361853832438,
-      "ma_ndcg": 0.3736665020938942,
-      "dz_ndcg": 0.5794171291497712,
-      "tn_ndcg": 0.41230592068748684,
-      "spread_ndcg": 0.205750627055877,
-      "worst_group": 0.3235294117647059
+      "ma_rec": 0.21323529411764705,
+      "dz_rec": 0.3560606060606061,
+      "tn_rec": 0.20454545454545456,
+      "spread_rec": 0.15151515151515152,
+      "ma_ndcg": 0.24011148312604602,
+      "dz_ndcg": 0.40943028293619865,
+      "tn_ndcg": 0.23867550710325447,
+      "spread_ndcg": 0.17075477583294418,
+      "worst_group": 0.20454545454545456
     },
     {
       "cfg": "A2",
-      "ma_rec": 0.36764705882352944,
-      "dz_rec": 0.4621212121212121,
-      "tn_rec": 0.32575757575757575,
-      "spread_rec": 0.13636363636363635,
-      "ma_ndcg": 0.40240253503561196,
-      "dz_ndcg": 0.5279723737780628,
-      "tn_ndcg": 0.3950735515809703,
-      "spread_ndcg": 0.13289882219709254,
-      "worst_group": 0.32575757575757575
+      "ma_rec": 0.27941176470588236,
+      "dz_rec": 0.4166666666666667,
+      "tn_rec": 0.3106060606060606,
+      "spread_rec": 0.13725490196078433,
+      "ma_ndcg": 0.34640617480893593,
+      "dz_ndcg": 0.4762445149395453,
+      "tn_ndcg": 0.38172247223714245,
+      "spread_ndcg": 0.12983834013060935,
+      "worst_group": 0.27941176470588236
     },
     {
       "cfg": "A3",
-      "ma_rec": 0.36764705882352944,
-      "dz_rec": 0.4621212121212121,
-      "tn_rec": 0.3181818181818182,
-      "spread_rec": 0.14393939393939392,
-      "ma_ndcg": 0.4018610607424789,
-      "dz_ndcg": 0.5279723737780628,
-      "tn_ndcg": 0.38903446109505024,
-      "spread_ndcg": 0.1389379126830126,
-      "worst_group": 0.3181818181818182
+      "ma_rec": 0.2867647058823529,
+      "dz_rec": 0.4166666666666667,
+      "tn_rec": 0.30303030303030304,
+      "spread_rec": 0.12990196078431376,
+      "ma_ndcg": 0.36544464855476533,
+      "dz_ndcg": 0.4755603901463451,
+      "tn_ndcg": 0.3803907491204073,
+      "spread_ndcg": 0.11011574159157977,
+      "worst_group": 0.2867647058823529
     },
     {
       "cfg": "A4",
-      "ma_rec": 0.4264705882352941,
-      "dz_rec": 0.5378787878787878,
-      "tn_rec": 0.4090909090909091,
-      "spread_rec": 0.12878787878787873,
-      "ma_ndcg": 0.46396994416759924,
-      "dz_ndcg": 0.5561632457764224,
-      "tn_ndcg": 0.466383095377304,
-      "spread_ndcg": 0.09219330160882316,
-      "worst_group": 0.4090909090909091
+      "ma_rec": 0.47794117647058826,
+      "dz_rec": 0.6439393939393939,
+      "tn_rec": 0.553030303030303,
+      "spread_rec": 0.16599821746880566,
+      "ma_ndcg": 0.4538200588998485,
+      "dz_ndcg": 0.6144518266326344,
+      "tn_ndcg": 0.5395442289688881,
+      "spread_ndcg": 0.16063176773278592,
+      "worst_group": 0.47794117647058826
     },
     {
       "cfg": "A5",
-      "ma_rec": 0.4411764705882353,
-      "dz_rec": 0.553030303030303,
-      "tn_rec": 0.4090909090909091,
-      "spread_rec": 0.14393939393939387,
-      "ma_ndcg": 0.4720065722295312,
-      "dz_ndcg": 0.5644434080220493,
-      "tn_ndcg": 0.466383095377304,
-      "spread_ndcg": 0.0980603126447453,
-      "worst_group": 0.4090909090909091
+      "ma_rec": 0.4632352941176471,
+      "dz_rec": 0.6060606060606061,
+      "tn_rec": 0.5075757575757576,
+      "spread_rec": 0.142825311942959,
+      "ma_ndcg": 0.44382047867686103,
+      "dz_ndcg": 0.5999942480218429,
+      "tn_ndcg": 0.4903136961683634,
+      "spread_ndcg": 0.15617376934498184,
+      "worst_group": 0.4632352941176471
     },
     {
       "cfg": "A6",
-      "ma_rec": 0.36764705882352944,
-      "dz_rec": 0.48484848484848486,
-      "tn_rec": 0.3333333333333333,
-      "spread_rec": 0.15151515151515155,
-      "ma_ndcg": 0.4136828064067979,
-      "dz_ndcg": 0.5489754975711029,
-      "tn_ndcg": 0.38835033630185006,
-      "spread_ndcg": 0.1606251612692528,
-      "worst_group": 0.3333333333333333
+      "ma_rec": 0.29411764705882354,
+      "dz_rec": 0.4166666666666667,
+      "tn_rec": 0.3106060606060606,
+      "spread_rec": 0.12254901960784315,
+      "ma_ndcg": 0.3553281408385387,
+      "dz_ndcg": 0.48163882484989234,
+      "tn_ndcg": 0.38643265735428933,
+      "spread_ndcg": 0.12631068401135365,
+      "worst_group": 0.29411764705882354
     },
     {
       "cfg": "A7",
-      "ma_rec": 0.4264705882352941,
-      "dz_rec": 0.5378787878787878,
-      "tn_rec": 0.4090909090909091,
-      "spread_rec": 0.12878787878787873,
-      "ma_ndcg": 0.46396994416759924,
-      "dz_ndcg": 0.5561632457764224,
-      "tn_ndcg": 0.466383095377304,
-      "spread_ndcg": 0.09219330160882316,
-      "worst_group": 0.4090909090909091
+      "ma_rec": 0.47058823529411764,
+      "dz_rec": 0.5984848484848485,
+      "tn_rec": 0.5227272727272727,
+      "spread_rec": 0.12789661319073087,
+      "ma_ndcg": 0.4429442694777422,
+      "dz_ndcg": 0.5972073773481805,
+      "tn_ndcg": 0.5216156548912341,
+      "spread_ndcg": 0.15426310787043834,
+      "worst_group": 0.47058823529411764
     }
   ],
   "table5": [
@@ -253,58 +253,58 @@
     },
     {
       "cfg": "A1",
-      "faithfulness": 1.2,
-      "kappa_faith": 0.884,
-      "relevance": 1.12,
-      "kappa_rel": 0.909
+      "faithfulness": 0.85,
+      "kappa_faith": 0.851,
+      "relevance": 0.78,
+      "kappa_rel": 0.888
     },
     {
       "cfg": "A2",
-      "faithfulness": 1.38,
-      "kappa_faith": 0.86,
-      "relevance": 1.35,
-      "kappa_rel": 0.888
+      "faithfulness": 1.12,
+      "kappa_faith": 0.888,
+      "relevance": 1.07,
+      "kappa_rel": 0.922
     },
     {
       "cfg": "A3",
-      "faithfulness": 1.35,
-      "kappa_faith": 0.858,
-      "relevance": 1.3,
-      "kappa_rel": 0.891
+      "faithfulness": 1.1,
+      "kappa_faith": 0.891,
+      "relevance": 1.1,
+      "kappa_rel": 0.919
     },
     {
       "cfg": "A4",
-      "faithfulness": 1.55,
-      "kappa_faith": 0.86,
-      "relevance": 1.5,
-      "kappa_rel": 0.866
+      "faithfulness": 1.43,
+      "kappa_faith": 0.877,
+      "relevance": 1.4,
+      "kappa_rel": 0.891
     },
     {
       "cfg": "A5",
-      "faithfulness": 1.55,
-      "kappa_faith": 0.86,
-      "relevance": 1.5,
-      "kappa_rel": 0.866
+      "faithfulness": 1.27,
+      "kappa_faith": 0.9,
+      "relevance": 1.27,
+      "kappa_rel": 0.905
     },
     {
       "cfg": "A6",
-      "faithfulness": 1.35,
-      "kappa_faith": 0.854,
-      "relevance": 1.35,
-      "kappa_rel": 0.888
+      "faithfulness": 1.2,
+      "kappa_faith": 0.896,
+      "relevance": 1.15,
+      "kappa_rel": 0.942
     },
     {
       "cfg": "A7",
-      "faithfulness": 1.55,
-      "kappa_faith": 0.86,
-      "relevance": 1.5,
-      "kappa_rel": 0.866
+      "faithfulness": 1.35,
+      "kappa_faith": 0.882,
+      "relevance": 1.3,
+      "kappa_rel": 0.912
     }
   ],
   "table6": [
     {
       "cfg": "A0",
-      "latency_ms": 0.003306666667413083,
+      "latency_ms": 0.002413000038359314,
       "llm_calls": 1,
       "embed_calls": 0,
       "rerank_calls": 0,
@@ -312,7 +312,7 @@
     },
     {
       "cfg": "A1",
-      "latency_ms": 10.882681666665425,
+      "latency_ms": 11.272724000009475,
       "llm_calls": 1,
       "embed_calls": 1.0033333333333334,
       "rerank_calls": 0,
@@ -320,7 +320,7 @@
     },
     {
       "cfg": "A2",
-      "latency_ms": 32.126614000001915,
+      "latency_ms": 41.157328999979654,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -328,7 +328,7 @@
     },
     {
       "cfg": "A3",
-      "latency_ms": 30.004394000000804,
+      "latency_ms": 95.5702783333254,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -336,23 +336,23 @@
     },
     {
       "cfg": "A4",
-      "latency_ms": 121.34209366666558,
+      "latency_ms": 433.66974466664635,
       "llm_calls": 2,
-      "embed_calls": 4,
-      "rerank_calls": 4,
-      "gain_per_call": -6.333333333333326
+      "embed_calls": 3.97,
+      "rerank_calls": 3.97,
+      "gain_per_call": -0.6315789473684218
     },
     {
       "cfg": "A5",
-      "latency_ms": 131.4482516666673,
+      "latency_ms": 2101.56616066665,
       "llm_calls": 3,
-      "embed_calls": 4.09,
-      "rerank_calls": 4.09,
-      "gain_per_call": -3.3333333333333335
+      "embed_calls": 4.326666666666667,
+      "rerank_calls": 4.326666666666667,
+      "gain_per_call": 0.1842105263157891
     },
     {
       "cfg": "A6",
-      "latency_ms": 33.0944026666657,
+      "latency_ms": 95.69080566667253,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -360,139 +360,139 @@
     },
     {
       "cfg": "A7",
-      "latency_ms": 124.41033533333211,
-      "llm_calls": 3.09,
-      "embed_calls": 4,
-      "rerank_calls": 4,
-      "gain_per_call": -3.030303030303027
+      "latency_ms": 1005.9344659999867,
+      "llm_calls": 3.34,
+      "embed_calls": 3.97,
+      "rerank_calls": 3.97,
+      "gain_per_call": -0.4273504273504274
     }
   ],
   "table7": [
     {
       "comparison": "A2 → AB1",
       "factor": "Suppression du reranker cross-encoder (AB1)",
-      "ref_recall": 0.385,
-      "var_recall": 0.4025,
-      "diff_recall": 0.017500000000000016,
+      "ref_recall": 0.335,
+      "var_recall": 0.31,
+      "diff_recall": -0.025000000000000022,
       "ci_diff": [
-        -0.015,
-        0.05
+        -0.05,
+        -0.0025
       ],
-      "diff_ndcg": 0.029393009005702464,
+      "diff_ndcg": -0.040109641647696204,
       "diff_llm": 0,
-      "p_val": 0.288
+      "p_val": 0.042
     },
     {
       "comparison": "A2 → A3",
       "factor": "Normalisation heuristique Arabizi V2",
-      "ref_recall": 0.385,
-      "var_recall": 0.3825,
-      "diff_recall": -0.0025000000000000022,
+      "ref_recall": 0.335,
+      "var_recall": 0.335,
+      "diff_recall": 0.0,
       "ci_diff": [
         -0.0075,
-        0.0
+        0.0075
       ],
-      "diff_ndcg": -0.00217700112001884,
+      "diff_ndcg": 0.005807851263303354,
       "diff_llm": 0,
-      "p_val": 0.63
+      "p_val": 1.0
     },
     {
       "comparison": "A3 → AB2",
       "factor": "Translittération arabe V3 vs normalisation V2 (AB2)",
-      "ref_recall": 0.3825,
-      "var_recall": 0.4875,
-      "diff_recall": 0.10499999999999998,
+      "ref_recall": 0.335,
+      "var_recall": 0.39,
+      "diff_recall": 0.05499999999999999,
       "ci_diff": [
-        0.045,
-        0.165
+        0.0025,
+        0.1175
       ],
-      "diff_ndcg": 0.09744627449464832,
+      "diff_ndcg": 0.027197390808857524,
       "diff_llm": 1,
-      "p_val": 0.0
+      "p_val": 0.066
     },
     {
       "comparison": "A2 → A4",
       "factor": "Réécriture multilingue en 3 formes (A4)",
-      "ref_recall": 0.385,
-      "var_recall": 0.4575,
-      "diff_recall": 0.07250000000000001,
+      "ref_recall": 0.335,
+      "var_recall": 0.5575,
+      "diff_recall": 0.22249999999999998,
       "ci_diff": [
-        0.035,
-        0.11
+        0.1775,
+        0.275
       ],
-      "diff_ndcg": 0.053768056317124446,
+      "diff_ndcg": 0.1342103131711057,
       "diff_llm": 1,
-      "p_val": 0.001
+      "p_val": 0.0
     },
     {
       "comparison": "A2 → AB3",
       "factor": "Étape corrective seule sans réécriture (AB3)",
-      "ref_recall": 0.385,
-      "var_recall": 0.385,
-      "diff_recall": 0.0,
+      "ref_recall": 0.335,
+      "var_recall": 0.3375,
+      "diff_recall": 0.0025000000000000022,
       "ci_diff": [
-        -0.0125,
-        0.0125
+        0.0,
+        0.0075
       ],
-      "diff_ndcg": 0.004487271453255337,
+      "diff_ndcg": 0.004056137132412541,
       "diff_llm": 1,
-      "p_val": 1.0
+      "p_val": 0.607
     },
     {
       "comparison": "A4 → A5",
       "factor": "Étape corrective ajoutée à la réécriture (A5)",
-      "ref_recall": 0.4575,
-      "var_recall": 0.4675,
-      "diff_recall": 0.010000000000000009,
+      "ref_recall": 0.5575,
+      "var_recall": 0.525,
+      "diff_recall": -0.03249999999999997,
       "ci_diff": [
-        0.0,
-        0.025
+        -0.06,
+        -0.0075
       ],
-      "diff_ndcg": 0.0054649070821137236,
+      "diff_ndcg": -0.024416934041550098,
       "diff_llm": 1,
-      "p_val": 0.291
+      "p_val": 0.017
     },
     {
       "comparison": "A4 → AB5a",
       "factor": "Expansion par graphe sans juge (AB5a)",
-      "ref_recall": 0.4575,
-      "var_recall": 0.4075,
-      "diff_recall": -0.050000000000000044,
+      "ref_recall": 0.5575,
+      "var_recall": 0.4475,
+      "diff_recall": -0.10999999999999999,
       "ci_diff": [
-        -0.0875,
-        -0.015
+        -0.1575,
+        -0.0625
       ],
-      "diff_ndcg": -0.03421926331047065,
+      "diff_ndcg": -0.06297361953882752,
       "diff_llm": 0,
-      "p_val": 0.006
+      "p_val": 0.0
     },
     {
       "comparison": "AB5a → AB5b",
       "factor": "Filtrage de l'expansion par juge LLM (AB5b)",
-      "ref_recall": 0.4075,
-      "var_recall": 0.4625,
-      "diff_recall": 0.05500000000000005,
+      "ref_recall": 0.4475,
+      "var_recall": 0.54,
+      "diff_recall": 0.09250000000000003,
       "ci_diff": [
-        0.0225,
-        0.09
+        0.0525,
+        0.1325
       ],
-      "diff_ndcg": 0.036876463124275505,
+      "diff_ndcg": 0.05195556805553114,
       "diff_llm": 1,
-      "p_val": 0.002
+      "p_val": 0.0
     },
     {
       "comparison": "AB5b → A7",
       "factor": "Récursion de profondeur 2 (A7)",
-      "ref_recall": 0.4625,
-      "var_recall": 0.4575,
-      "diff_recall": -0.0050000000000000044,
+      "ref_recall": 0.54,
+      "var_recall": 0.53,
+      "diff_recall": -0.010000000000000009,
       "ci_diff": [
-        -0.0125,
-        0.0
+        -0.0225,
+        0.0025
       ],
-      "diff_ndcg": -0.002657199813804856,
-      "diff_llm": 0.08999999999999986,
-      "p_val": 0.243
+      "diff_ndcg": -0.004286814629715363,
+      "diff_llm": 0.33999999999999986,
+      "p_val": 0.082
     }
   ],
   "table8": {
@@ -531,17 +531,17 @@
     },
     "corpus_passages": 120,
     "pool_depth": 20,
-    "pool_unique_passages": 113,
-    "pool_corpus_fraction": 0.942,
-    "pool_redundancy": 92.9
+    "pool_unique_passages": 120,
+    "pool_corpus_fraction": 1.0,
+    "pool_redundancy": 87.1
   },
   "holm_p_adjusted": {
-    "A1": 0.154,
-    "A5": 0.396,
-    "A4": 0.475,
-    "A7": 0.38,
-    "A6": 0.387,
-    "A3": 1.0,
+    "A1": 0.0,
+    "A6": 0.0,
+    "A7": 0.08,
+    "A4": 0.124,
+    "A3": 0.159,
+    "A5": 0.798,
     "A0": 1.0,
     "A2": 1.0
   }

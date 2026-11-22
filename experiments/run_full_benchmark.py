@@ -129,7 +129,7 @@ def quadratic_weighted_kappa(r1: list[int], r2: list[int], num_ratings: int = 3)
 
 
 def run_benchmark():
-    corpus_path = "data/corpus_educational.jsonl"
+    corpus_path = "data/corpus.jsonl" if os.path.exists("data/corpus.jsonl") else "data/corpus_educational.jsonl"
     queries_path = "data/queries_benchmark.csv"
 
     print("Chargement du corpus...")
@@ -557,6 +557,9 @@ def run_benchmark():
         "table9": table9_data,
         "holm_p_adjusted": holm_adj,
     }
+
+    if hasattr(generator, "_save_cache"):
+        generator._save_cache()
 
     out_file = "paper/benchmark_results.json"
     with open(out_file, "w", encoding="utf-8") as f:
