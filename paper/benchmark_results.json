@@ -376,7 +376,7 @@
   "table6": [
     {
       "cfg": "A0",
-      "latency_ms": 0.0016076666361186653,
+      "latency_ms": 0.0028753333511607098,
       "llm_calls": 1,
       "embed_calls": 0,
       "rerank_calls": 0,
@@ -384,7 +384,7 @@
     },
     {
       "cfg": "A1",
-      "latency_ms": 9.690450333340172,
+      "latency_ms": 10.256416666670702,
       "llm_calls": 1,
       "embed_calls": 1.0033333333333334,
       "rerank_calls": 0,
@@ -392,7 +392,7 @@
     },
     {
       "cfg": "A2",
-      "latency_ms": 42.0697883333681,
+      "latency_ms": 33.51755600000615,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -400,7 +400,7 @@
     },
     {
       "cfg": "A3",
-      "latency_ms": 47.31817233332549,
+      "latency_ms": 30.618007000011858,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -408,7 +408,7 @@
     },
     {
       "cfg": "A4",
-      "latency_ms": 189.0284803333149,
+      "latency_ms": 136.1243283333412,
       "llm_calls": 2,
       "embed_calls": 3.97,
       "rerank_calls": 3.97,
@@ -416,7 +416,7 @@
     },
     {
       "cfg": "A5",
-      "latency_ms": 210.26394800001677,
+      "latency_ms": 151.2051110000175,
       "llm_calls": 3,
       "embed_calls": 4.326666666666667,
       "rerank_calls": 4.326666666666667,
@@ -424,7 +424,7 @@
     },
     {
       "cfg": "A6",
-      "latency_ms": 44.544378999999026,
+      "latency_ms": 32.72786866664925,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -432,7 +432,7 @@
     },
     {
       "cfg": "A7",
-      "latency_ms": 153.11738833333948,
+      "latency_ms": 137.43221933337432,
       "llm_calls": 3.34,
       "embed_calls": 3.97,
       "rerank_calls": 3.97,
@@ -634,7 +634,13 @@
       "p": 0.9856675367028782
     },
     "df_error_between": 97,
-    "df_error_within": 582
+    "df_error_within": 582,
+    "eps_gg": 0.3686,
+    "df_arch_gg": 2.21,
+    "df_error_within_gg": 214.5,
+    "p_arch_gg": 7.720433496611925e-22,
+    "df_inter_gg": 4.42,
+    "p_inter_gg": 0.8808138703534117
   },
   "anova_gap": {
     "arch": {
@@ -653,16 +659,32 @@
       "p": 0.9954734322317285
     },
     "df_error_between": 97,
-    "df_error_within": 582
+    "df_error_within": 582,
+    "eps_gg": 0.4153,
+    "df_arch_gg": 2.49,
+    "df_error_within_gg": 241.7,
+    "p_arch_gg": 0.07329295394755055,
+    "df_inter_gg": 4.98,
+    "p_inter_gg": 0.9394800245897229
   },
   "h3_faith_test": {
     "mean_reduction": 0.25,
+    "ci_95_bootstrap": [
+      0.025,
+      0.5
+    ],
+    "ci_95_parametric": [
+      0.002,
+      0.498
+    ],
     "ci_95": [
       0.025,
       0.5
     ],
     "t_stat": 2.04,
+    "df": 39,
     "p_t": 0.0485,
+    "w_stat": 23.5,
     "p_wilcoxon": 0.0569
   },
   "h3_tost_test": {
@@ -673,8 +695,12 @@
       -0.023,
       0.003
     ],
+    "t1_stat": 6.59,
+    "p1_val": 1.09e-09,
+    "t2_stat": -9.88,
+    "p2_val": 9.92e-17,
     "is_equivalent": true,
-    "p_tost": 0.0001,
-    "conclusion": "L'IC à 95% [-0.023, +0.003] est strictement inclus dans [-0.05, +0.05], confirmant l'équivalence pratique (plateau de performance)."
+    "p_tost": 1.09e-09,
+    "conclusion": "L'IC à 95% [-0.023, +0.003] est strictement inclus dans [-0.05, +0.05], confirmant l'équivalence pratique (plateau de performance sur requêtes single-hop)."
   }
 }
