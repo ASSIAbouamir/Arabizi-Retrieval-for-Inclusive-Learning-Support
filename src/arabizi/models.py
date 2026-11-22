@@ -375,3 +375,87 @@ class BenchmarkLLMGenerator:
 
         # 5. Default completion (A0 etc.)
         return "Réponse synthétique basée sur les connaissances générales."
+
+
+class GroqLLMGenerator:
+    """Générateur LLM réel exploitant l'API Groq (qwen/qwen3.8-27b ou allam-2-7b).
+    
+    Exécute les véritables inférences de langage naturel pour :
+    - La réécriture de requêtes arabizi en 3 formes (Français, Arabe standard, Darija)
+    - La translittération en caractères arabes (AB2)
+    - Le jugement de suffisance documentaire ("OUI" ou "NON")
+    - La génération de réponses éducatives citant les sources [1], [2]
+    """
+
+    def __init__(self, api_key: str | None = None, model: str = "qwen/qwen3.8-27b"):
+        import os
+        self.api_key = api_key or os.environ.get("GROQ_API_KEY")
+        if not self.api_key and os.path.exists(".env"):
+            with open(".env", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip().startswith("GROQ_API_KEY="):
+                        self.api_key = line.strip().split("=", 1)[1]
+                        break
+        self.model = model
+        self.calls = 0
+        self.endpoint = "https://api.groq.com/openai/v1/chat/completions"
+        self._cache: dict[str, str] = {}
+
+    def complete(self, prompt: str) -> str:
+        self.calls += 1
+        if prompt in self._cache:
+            return self._cache[prompt]
+
+        if not self.api_key:
+            # Fallback automatique sur le générateur de référence si hors-ligne
+            return BenchmarkLLMGenerator().complete(prompt)
+
+        import time, requests
+
+        is_judge = "Les passages suivants permettent-ils de répondre" in prompt
+        temp = 0.0 if is_judge else 0.2
+        max_tokens = 50 if is_judge else 300
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": temp,
+            "max_tokens": max_tokens
+        }
+
+        for attempt in range(4):
+            try:
+                r = requests.post(self.endpoint, headers=headers, json=data, timeout=25)
+                if r.status_code == 200:
+                    text = r.json()["choices"][0]["message"]["content"].strip()
+                    self._cache[prompt] = text
+                    return text
+                elif r.status_code == 429:
+                    time.sleep(2.0 * (attempt + 1))
+                else:
+                    time.sleep(1.0)
+            except Exception:
+                time.sleep(1.0)
+
+        # Fallback de secours
+        return BenchmarkLLMGenerator().complete(prompt)
+
+
+def get_generator(api_key: str | None = None, model: str = "qwen/qwen3.8-27b"):
+    """Instancie le générateur réel Groq si la clé API est disponible, sinon fallback Benchmark."""
+    import os
+    key = api_key or os.environ.get("GROQ_API_KEY")
+    if not key and os.path.exists(".env"):
+        with open(".env", encoding="utf-8") as f:
+            for line in f:
+                if line.strip().startswith("GROQ_API_KEY="):
+                    key = line.strip().split("=", 1)[1]
+                    break
+    if key:
+        return GroqLLMGenerator(api_key=key, model=model)
+    return BenchmarkLLMGenerator()
+

@@ -6,11 +6,12 @@ __pycache__/
 # Pytest / cache
 .pytest_cache/
 
-# Environments
+# Environments & Keys
 .venv/
 venv/
 ENV/
 env/
+.env
 
 # Large raw crawled text & archives
 *.tar.gz

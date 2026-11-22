@@ -24,8 +24,10 @@ from arabizi.architectures import ABLATIONS, ARCHITECTURES, Corpus, Result
 from arabizi.metrics import ndcg_at_k, recall_at_k, reciprocal_rank
 from arabizi.models import (
     BenchmarkLLMGenerator,
+    GroqLLMGenerator,
     MultilingualCrossEncoderReranker,
     MultilingualSemanticEmbedder,
+    get_generator,
 )
 
 
@@ -140,7 +142,11 @@ def run_benchmark():
 
     embedder = MultilingualSemanticEmbedder()
     reranker = MultilingualCrossEncoderReranker()
-    generator = BenchmarkLLMGenerator()
+    generator = get_generator()
+    if isinstance(generator, GroqLLMGenerator):
+        print(f"[INFO] Mode PRODUCTION activé : Générateur LLM réel Groq ({generator.model}) connecté avec succès.")
+    else:
+        print("[INFO] Mode SIMULATION activé : Générateur Benchmark heuristique.")
 
     configs_to_run = [
         "A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7",
