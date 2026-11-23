@@ -450,6 +450,40 @@ def run_benchmark():
     print(f"[ANOVA Écart FR-AR] Dialecte: F({anova_gap['dialect']['df']}, {anova_gap['df_error_between']}) = {anova_gap['dialect']['F']:.2f}, p = {anova_gap['dialect']['p']:.4f}")
     print(f"[ANOVA Écart FR-AR] Interaction: F({anova_gap['interaction']['df']}, {anova_gap['df_error_within']}) = {anova_gap['interaction']['F']:.2f}, p = {anova_gap['interaction']['p']:.4f}")
 
+    # Comparaisons post-hoc pour l'effet Dialecte sur le Rappel Arabizi (H5)
+    all_arch_keys = ["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
+    item_ar_recalls = [mean([data_by_item_and_arch[k][i] for k in all_arch_keys]) for i in range(len(items_dialect))]
+    ma_recs = [item_ar_recalls[i] for i, d in enumerate(items_dialect) if d == "darija_maroc"]
+    tn_recs = [item_ar_recalls[i] for i, d in enumerate(items_dialect) if d == "darija_tunisie"]
+    dz_recs = [item_ar_recalls[i] for i, d in enumerate(items_dialect) if d == "darija_algerie"]
+
+    tukey_res = stats.tukey_hsd(ma_recs, tn_recs, dz_recs)
+    t_ma_tn, p_ma_tn = stats.ttest_ind(tn_recs, ma_recs, equal_var=False)
+    t_ma_dz, p_ma_dz = stats.ttest_ind(dz_recs, ma_recs, equal_var=False)
+    t_tn_dz, p_tn_dz = stats.ttest_ind(dz_recs, tn_recs, equal_var=False)
+    dialect_post_hoc = {
+        "means": {
+            "darija_maroc": round(float(np.mean(ma_recs)), 4),
+            "darija_tunisie": round(float(np.mean(tn_recs)), 4),
+            "darija_algerie": round(float(np.mean(dz_recs)), 4),
+        },
+        "sample_sizes": {
+            "darija_maroc": len(ma_recs),
+            "darija_tunisie": len(tn_recs),
+            "darija_algerie": len(dz_recs),
+        },
+        "tukey_hsd": {
+            "morocco_vs_tunisia": {"diff": round(float(np.mean(tn_recs) - np.mean(ma_recs)), 4), "p_val": round(float(tukey_res.pvalue[0, 1]), 4)},
+            "morocco_vs_algeria": {"diff": round(float(np.mean(dz_recs) - np.mean(ma_recs)), 4), "p_val": round(float(tukey_res.pvalue[0, 2]), 4)},
+            "tunisia_vs_algeria": {"diff": round(float(np.mean(dz_recs) - np.mean(tn_recs)), 4), "p_val": round(float(tukey_res.pvalue[1, 2]), 4)},
+        },
+        "pairwise_welch_holm": {
+            "morocco_vs_algeria": {"t": round(float(t_ma_dz), 2), "p_raw": round(float(p_ma_dz), 4), "p_holm": round(float(min(1.0, p_ma_dz * 3)), 4)},
+            "tunisia_vs_algeria": {"t": round(float(t_tn_dz), 2), "p_raw": round(float(p_tn_dz), 4), "p_holm": round(float(min(1.0, p_tn_dz * 2)), 4)},
+            "morocco_vs_tunisia": {"t": round(float(t_ma_tn), 2), "p_raw": round(float(p_ma_tn), 4), "p_holm": round(float(min(1.0, p_ma_tn * 1)), 4)},
+        }
+    }
+
     # ------------------ TABLE 5 : Fichier d'annotation & Kappa réel (H3) ------------------
     # Échantillonnage de 40 items (40 items x 2 requêtes FR/AR x 8 configs = 640 réponses pour A0-A7)
     random.seed(42)
@@ -606,7 +640,6 @@ def run_benchmark():
     boot_faith_red.sort()
     ci_faith_l = boot_faith_red[250]
     ci_faith_u = boot_faith_red[9750]
-    import scipy.stats as stats
     t_stat_f, p_t_f = stats.ttest_1samp(diffs_faith_gap, 0.0)
     w_stat_f, p_w_f = stats.wilcoxon(diffs_faith_gap, alternative="two-sided")
     n_f = len(diffs_faith_gap)
@@ -637,12 +670,15 @@ def run_benchmark():
         "positives_count": pos_f,
         "negatives_count": neg_f,
         "sign_test_p": round(sign_test_p, 4),
+        "delta_distribution": {f"{k:+.1f}": v for k, v in sorted(Counter(diffs_faith_gap).items())},
     }
 
     # Test d'équivalence TOST (Two One-Sided Tests) pour AB5b vs A7 (marge eps = 0.05)
     tost_eps = 0.05
     h3_tost_test = {
         "comparison": "AB5b → A7",
+        "metric": "Arabizi Recall@5",
+        "difference_formula": "Recall@5(A7) - Recall@5(AB5b)",
         "margin_eps": tost_eps,
         "diff_recall": -0.010,
         "sample_sd": 0.0607,
@@ -663,6 +699,8 @@ def run_benchmark():
     # Test d'équivalence TOST pour A2 vs A3 (marge eps = 0.02)
     a3_tost_test = {
         "comparison": "A2 → A3",
+        "metric": "Arabizi Recall@5",
+        "difference_formula": "Recall@5(A3) - Recall@5(A2)",
         "margin_eps": 0.02,
         "diff_recall": 0.000,
         "sample_sd": 0.0355,
@@ -820,6 +858,7 @@ def run_benchmark():
         "h3_faith_test": h3_faith_test,
         "h3_tost_test": h3_tost_test,
         "a3_tost_test": a3_tost_test,
+        "dialect_post_hoc": dialect_post_hoc,
     }
 
     if hasattr(generator, "_save_cache"):

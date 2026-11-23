@@ -376,7 +376,7 @@
   "table6": [
     {
       "cfg": "A0",
-      "latency_ms": 0.0016433333318370085,
+      "latency_ms": 0.25081833329750225,
       "llm_calls": 1,
       "embed_calls": 0,
       "rerank_calls": 0,
@@ -384,7 +384,7 @@
     },
     {
       "cfg": "A1",
-      "latency_ms": 10.369977333321003,
+      "latency_ms": 35.227027333312435,
       "llm_calls": 1,
       "embed_calls": 1.0033333333333334,
       "rerank_calls": 0,
@@ -392,7 +392,7 @@
     },
     {
       "cfg": "A2",
-      "latency_ms": 48.244623333351534,
+      "latency_ms": 155.03629233334019,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -400,7 +400,7 @@
     },
     {
       "cfg": "A3",
-      "latency_ms": 40.933761000002654,
+      "latency_ms": 145.38199933337938,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -408,7 +408,7 @@
     },
     {
       "cfg": "A4",
-      "latency_ms": 175.97311166668078,
+      "latency_ms": 510.94279500000994,
       "llm_calls": 2,
       "embed_calls": 3.97,
       "rerank_calls": 3.97,
@@ -416,7 +416,7 @@
     },
     {
       "cfg": "A5",
-      "latency_ms": 152.2151656666635,
+      "latency_ms": 536.4019043333246,
       "llm_calls": 3,
       "embed_calls": 4.326666666666667,
       "rerank_calls": 4.326666666666667,
@@ -424,7 +424,7 @@
     },
     {
       "cfg": "A6",
-      "latency_ms": 37.60334866664683,
+      "latency_ms": 133.00224166669068,
       "llm_calls": 1,
       "embed_calls": 1,
       "rerank_calls": 1,
@@ -432,7 +432,7 @@
     },
     {
       "cfg": "A7",
-      "latency_ms": 136.99533066663813,
+      "latency_ms": 510.3992819999985,
       "llm_calls": 3.34,
       "embed_calls": 3.97,
       "rerank_calls": 3.97,
@@ -691,10 +691,19 @@
     "ties_count": 26,
     "positives_count": 11,
     "negatives_count": 3,
-    "sign_test_p": 0.0574
+    "sign_test_p": 0.0574,
+    "delta_distribution": {
+      "-2.0": 1,
+      "-1.0": 2,
+      "+0.0": 26,
+      "+1.0": 8,
+      "+2.0": 3
+    }
   },
   "h3_tost_test": {
     "comparison": "AB5b → A7",
+    "metric": "Arabizi Recall@5",
+    "difference_formula": "Recall@5(A7) - Recall@5(AB5b)",
     "margin_eps": 0.05,
     "diff_recall": -0.01,
     "sample_sd": 0.0607,
@@ -722,6 +731,8 @@
   },
   "a3_tost_test": {
     "comparison": "A2 → A3",
+    "metric": "Arabizi Recall@5",
+    "difference_formula": "Recall@5(A3) - Recall@5(A2)",
     "margin_eps": 0.02,
     "diff_recall": 0.0,
     "sample_sd": 0.0355,
@@ -742,5 +753,48 @@
     "is_equivalent": true,
     "p_tost": 8.49e-08,
     "conclusion": "L'IC à 95% est strictement inclus dans [-0.02, +0.02], confirmant l'équivalence pratique de la normalisation heuristique."
+  },
+  "dialect_post_hoc": {
+    "means": {
+      "darija_maroc": 0.355,
+      "darija_tunisie": 0.3874,
+      "darija_algerie": 0.4935
+    },
+    "sample_sizes": {
+      "darija_maroc": 34,
+      "darija_tunisie": 33,
+      "darija_algerie": 33
+    },
+    "tukey_hsd": {
+      "morocco_vs_tunisia": {
+        "diff": 0.0324,
+        "p_val": 0.8234
+      },
+      "morocco_vs_algeria": {
+        "diff": 0.1385,
+        "p_val": 0.0336
+      },
+      "tunisia_vs_algeria": {
+        "diff": 0.1061,
+        "p_val": 0.1353
+      }
+    },
+    "pairwise_welch_holm": {
+      "morocco_vs_algeria": {
+        "t": 2.63,
+        "p_raw": 0.0108,
+        "p_holm": 0.0323
+      },
+      "tunisia_vs_algeria": {
+        "t": 1.97,
+        "p_raw": 0.0531,
+        "p_holm": 0.1062
+      },
+      "morocco_vs_tunisia": {
+        "t": 0.57,
+        "p_raw": 0.573,
+        "p_holm": 0.573
+      }
+    }
   }
 }
